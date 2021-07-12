@@ -5,7 +5,6 @@ import de.leonheuer.skycave.jobsystem.enums.Job
 import de.leonheuer.skycave.jobsystem.enums.Message
 import de.leonheuer.skycave.jobsystem.enums.SellItem
 import de.leonheuer.skycave.jobsystem.model.CustomItem
-import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -17,6 +16,7 @@ object Util {
 
     private val main = JavaPlugin.getPlugin(JobSystem::class.java)
 
+    @Suppress("Deprecation")
     fun openShop(player: Player) {
         val user = main.dataManager.getUser(player.uniqueId)
         if (user == null) {
@@ -24,7 +24,7 @@ object Util {
             return
         }
 
-        val inv = Bukkit.createInventory(player, 45, Component.text("§6Item Ankauf"))
+        val inv = Bukkit.createInventory(player, 45, "§6Item Ankauf")
         placeholders(inv, 1)
         placeholders(inv, 5)
 
@@ -35,10 +35,13 @@ object Util {
                 .itemStack)
             slot++
         }
+
+        player.openInventory(inv)
     }
 
+    @Suppress("Deprecation")
     fun openSelector(player: Player) {
-        val inv = Bukkit.createInventory(player, 45, Component.text("§3§lJob §6Auswahl"))
+        val inv = Bukkit.createInventory(player, 45, "§3§lJob §6Auswahl")
         placeholders(inv, 1)
         placeholders(inv, 5)
 
@@ -79,6 +82,8 @@ object Util {
                 .setName("§b${it.friendlyName}").setLore("§7Klicke für Berufswechsel").itemStack)
             slot++
         }
+
+        player.openInventory(inv)
     }
 
     private fun placeholders(inv: Inventory, line: Int) {

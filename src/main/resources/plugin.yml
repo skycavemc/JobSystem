@@ -9,7 +9,3 @@ depend:
 commands:
   job:
     aliases: jobs
-
-permissions:
-  skybee.jobsystem:
-    admin: admin permission
