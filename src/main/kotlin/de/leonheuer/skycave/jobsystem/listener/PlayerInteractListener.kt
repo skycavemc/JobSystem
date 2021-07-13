@@ -1,9 +1,11 @@
 package de.leonheuer.skycave.jobsystem.listener
 
 import de.leonheuer.skycave.jobsystem.JobSystem
+import de.leonheuer.skycave.jobsystem.enums.GUIView
 import de.leonheuer.skycave.jobsystem.enums.Message
 import de.leonheuer.skycave.jobsystem.model.NPC
 import de.leonheuer.skycave.jobsystem.util.Util
+import org.bukkit.Sound
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
@@ -33,7 +35,8 @@ class PlayerInteractListener(private val main: JobSystem): Listener {
 
         val npc = main.dataManager.npc ?: return
         if (location.toVector() == npc.location.toVector() && entity.type == npc.entityType) {
-            Util.openShop(player)
+            player.playSound(player.location, Sound.ENTITY_VILLAGER_CELEBRATE, 1.0f, 1.0f)
+            Util.openGUI(player, GUIView.JOBS)
         }
     }
 

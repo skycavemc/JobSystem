@@ -27,10 +27,6 @@ enum class Message(private val message: String) {
     JOB_CHANGE_USE_FREE("&eDu hast deinen Job kostenlos gewechselt. Es verbleiben %amount kostenlose Wechsel."),
     JOB_CHANGE_PAY("&eDu hast deinen Job für 100.000$ gewechselt."),
     JOB_CHANGE_NO_MONEY("&cDu hast nicht genug Geld um deinen Beruf zu wechseln."),
-
-    // job gui titles
-    JOB_SELECTOR_TITLE("&8| &1Job Auswahl"),
-    JOB_SELL_TITLE("&8| &6Item Ankauf"),
     ;
 
     fun getString(): FormattableString {

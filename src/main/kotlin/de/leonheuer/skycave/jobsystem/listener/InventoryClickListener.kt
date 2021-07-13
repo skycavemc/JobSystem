@@ -1,6 +1,7 @@
 package de.leonheuer.skycave.jobsystem.listener
 
 import de.leonheuer.skycave.jobsystem.JobSystem
+import de.leonheuer.skycave.jobsystem.enums.GUIView
 import de.leonheuer.skycave.jobsystem.enums.Job
 import de.leonheuer.skycave.jobsystem.enums.Message
 import de.leonheuer.skycave.jobsystem.enums.RequirementResult
@@ -28,7 +29,7 @@ class InventoryClickListener(private val main: JobSystem): Listener {
         }
 
         when (player.openInventory.title) {
-            Message.JOB_SELECTOR_TITLE.getString().get(prefix = false) -> {
+            GUIView.JOBS.getTitle() -> {
                 event.isCancelled = true
                 val job = Job.fromItemStack(item) ?: return
 
@@ -36,7 +37,7 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                 if (user == null) {
                     main.dataManager.createUser(player.uniqueId, job)
                     player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString().replace("%job", job.friendlyName).get())
-                    Util.openSelector(player)
+                    Util.openGUI(player, GUIView.JOBS)
                     player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
                     return
                 }
@@ -56,7 +57,7 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                             .replace("%job", job.friendlyName).get())
                         player.sendMessage(Message.JOB_CHANGE_USE_FREE.getString()
                             .replace("%amount", user.freeJobChanges.toString()).get())
-                        Util.openSelector(player)
+                        Util.openGUI(player, GUIView.JOBS)
                         player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
                     }
                     RequirementResult.PAY -> TODO("confirm gui")
@@ -66,8 +67,13 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                     }
                 }
             }
-            Message.JOB_SELL_TITLE.getString().get(prefix = false) -> {
+            GUIView.SELL.getTitle() -> {
                 event.isCancelled = true
+                TODO("sell item")
+            }
+            GUIView.SELL_PERSONAL.getTitle() -> {
+                event.isCancelled = true
+                TODO("sell item")
             }
         }
     }
