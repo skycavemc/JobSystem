@@ -1,6 +1,7 @@
 package de.leonheuer.skycave.jobsystem.command
 
 import de.leonheuer.skycave.jobsystem.JobSystem
+import de.leonheuer.skycave.jobsystem.enums.GUIView
 import de.leonheuer.skycave.jobsystem.enums.Message
 import de.leonheuer.skycave.jobsystem.util.Util
 import org.bukkit.command.Command
@@ -50,7 +51,7 @@ class JobCommand(private val main: JobSystem): CommandExecutor, TabCompleter {
             return true
         }
 
-        Util.openSelector(sender)
+        Util.openGUI(sender, GUIView.JOBS)
         return true
     }
 

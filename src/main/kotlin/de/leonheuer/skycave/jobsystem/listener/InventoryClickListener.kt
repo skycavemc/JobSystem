@@ -28,9 +28,36 @@ class InventoryClickListener(private val main: JobSystem): Listener {
             return
         }
 
+        val title = player.openInventory.title
+        if (title != GUIView.JOBS.getTitle() &&
+            title != GUIView.SELL_PERSONAL.getTitle() &&
+            title != GUIView.SELL.getTitle()
+        ) {
+            return
+        }
+
+        event.isCancelled = true
+
+        when (item.itemMeta.displayName) {
+            "§6Berufe" -> {
+                player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
+                Util.openGUI(player, GUIView.JOBS)
+                return
+            }
+            "§6Allgemeiner Ankauf" -> {
+                player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
+                Util.openGUI(player, GUIView.SELL)
+                return
+            }
+            "§6Persönlicher Ankauf" -> {
+                player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
+                Util.openGUI(player, GUIView.SELL_PERSONAL)
+                return
+            }
+        }
+
         when (player.openInventory.title) {
             GUIView.JOBS.getTitle() -> {
-                event.isCancelled = true
                 val job = Job.fromItemStack(item) ?: return
 
                 val user = main.dataManager.getUser(player.uniqueId)
@@ -68,11 +95,9 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                 }
             }
             GUIView.SELL.getTitle() -> {
-                event.isCancelled = true
                 TODO("sell item")
             }
             GUIView.SELL_PERSONAL.getTitle() -> {
-                event.isCancelled = true
                 TODO("sell item")
             }
         }

@@ -58,7 +58,7 @@ object Util {
             inv.setItem(2, CustomItem(user.job.icon, 1)
                 .setName("§6Dein Beruf:")
                 .setLore("§b${user.job.friendlyName}", "", "§7Dein Beruf bestimmt, welche Items",
-                    "§7du am Spawn verkaufen kannst.")
+                    "§7du bei dem persönlichen", "§7Ankauf verkaufen kannst.")
                 .addFlag(ItemFlag.HIDE_ATTRIBUTES)
                 .itemStack)
             inv.setItem(3, CustomItem(Material.PAPER, 1)
