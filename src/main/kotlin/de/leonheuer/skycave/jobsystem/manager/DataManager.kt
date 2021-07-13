@@ -20,7 +20,7 @@ import java.util.*
 class DataManager(main: JobSystem) {
 
     private val userList = ArrayList<User>()
-    private val path = File(main.dataFolder.path)
+    private val path = File(main.dataFolder.path + "/")
     private val userPath = File(main.dataFolder.path + "/players/")
     var npc: NPC? = null
 
@@ -94,7 +94,7 @@ class DataManager(main: JobSystem) {
     }
 
     fun createUser(uuid: UUID, job: Job) {
-        val user = User(uuid, job, LocalDateTime.now(),Job.values().size + 1)
+        val user = User(uuid, job, LocalDateTime.now(),Job.values().size)
         userList.add(user)
         saveUser(user)
     }

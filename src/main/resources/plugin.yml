@@ -5,6 +5,7 @@ api-version: 1.16
 author: Hakuyamu
 depend:
   - SkyBeeCore
+  - Vault
 
 commands:
   job:

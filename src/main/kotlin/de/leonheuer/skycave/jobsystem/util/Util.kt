@@ -3,10 +3,13 @@ package de.leonheuer.skycave.jobsystem.util
 import de.leonheuer.skycave.jobsystem.JobSystem
 import de.leonheuer.skycave.jobsystem.enums.Job
 import de.leonheuer.skycave.jobsystem.enums.Message
+import de.leonheuer.skycave.jobsystem.enums.RequirementResult
 import de.leonheuer.skycave.jobsystem.enums.SellItem
 import de.leonheuer.skycave.jobsystem.model.CustomItem
+import de.leonheuer.skycave.jobsystem.model.User
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
@@ -25,7 +28,9 @@ object Util {
             return
         }
 
-        val inv = Bukkit.createInventory(player, 45, "§6Item Ankauf")
+        player.playSound(player.location, Sound.ENTITY_VILLAGER_CELEBRATE, 1.0f, 1.0f)
+
+        val inv = Bukkit.createInventory(player, 45, Message.JOB_SELL_TITLE.getString().get(prefix = false))
         placeholders(inv, 1)
         placeholders(inv, 5)
 
@@ -43,7 +48,7 @@ object Util {
 
     @Suppress("Deprecation")
     fun openSelector(player: Player) {
-        val inv = Bukkit.createInventory(player, 45, "§3§lJob §6Auswahl")
+        val inv = Bukkit.createInventory(player, 45, Message.JOB_SELECTOR_TITLE.getString().get(prefix = false))
         placeholders(inv, 1)
         placeholders(inv, 5)
 
@@ -95,6 +100,18 @@ object Util {
         for (i in (line-1) * 9 until line * 9) {
             inv.setItem(i, CustomItem(Material.BLACK_STAINED_GLASS_PANE, 1).setName("§0").itemStack)
         }
+    }
+
+    fun getRequirementResult(player: Player, user: User): RequirementResult {
+        if (user.freeJobChanges > 0) {
+            user.freeJobChanges.dec()
+            return RequirementResult.USE_FREE
+        }
+        if (main.economy.getBalance(player) >= 100000.0) {
+            main.economy.withdrawPlayer(player, 100000.0)
+            return RequirementResult.PAY
+        }
+        return RequirementResult.NO_MONEY
     }
 
 }

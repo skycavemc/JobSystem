@@ -7,7 +7,6 @@ import de.leonheuer.skycave.jobsystem.util.Util
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
-import kotlin.math.roundToInt
 
 class PlayerInteractListener(private val main: JobSystem): Listener {
 
@@ -33,7 +32,7 @@ class PlayerInteractListener(private val main: JobSystem): Listener {
         }
 
         val npc = main.dataManager.npc ?: return
-        if (location == npc.location && entity.type == npc.entityType) {
+        if (location.toVector() == npc.location.toVector() && entity.type == npc.entityType) {
             Util.openShop(player)
         }
     }

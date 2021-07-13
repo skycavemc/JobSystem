@@ -3,6 +3,7 @@ package de.leonheuer.skycave.jobsystem.listener
 import de.leonheuer.skycave.jobsystem.JobSystem
 import de.leonheuer.skycave.jobsystem.enums.Job
 import de.leonheuer.skycave.jobsystem.enums.Message
+import de.leonheuer.skycave.jobsystem.enums.RequirementResult
 import de.leonheuer.skycave.jobsystem.util.Util
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -27,7 +28,7 @@ class InventoryClickListener(private val main: JobSystem): Listener {
         }
 
         when (player.openInventory.title) {
-            "§3§lJob §6Auswahl" -> {
+            Message.JOB_SELECTOR_TITLE.getString().get(prefix = false) -> {
                 event.isCancelled = true
                 val job = Job.fromItemStack(item) ?: return
 
@@ -46,13 +47,26 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                     return
                 }
 
-                user.job = job
-                user.jobChangeDate = LocalDateTime.now()
-                player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString().replace("%job", job.friendlyName).get())
-                Util.openSelector(player)
-                player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+                when (Util.getRequirementResult(player, user)) {
+                    RequirementResult.USE_FREE -> {
+                        user.job = job
+                        user.jobChangeDate = LocalDateTime.now()
+                        user.freeJobChanges.dec()
+                        player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
+                            .replace("%job", job.friendlyName).get())
+                        player.sendMessage(Message.JOB_CHANGE_USE_FREE.getString()
+                            .replace("%amount", user.freeJobChanges.toString()).get())
+                        Util.openSelector(player)
+                        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+                    }
+                    RequirementResult.PAY -> TODO("confirm gui")
+                    RequirementResult.NO_MONEY -> {
+                        player.sendMessage(Message.JOB_CHANGE_NO_MONEY.getString().get())
+                        player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 0.7f)
+                    }
+                }
             }
-            "§6Item Ankauf" -> {
+            Message.JOB_SELL_TITLE.getString().get(prefix = false) -> {
                 event.isCancelled = true
             }
         }
