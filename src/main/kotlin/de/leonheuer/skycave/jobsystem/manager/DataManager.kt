@@ -21,7 +21,7 @@ class DataManager(main: JobSystem) {
 
     private val userList = ArrayList<User>()
     private val path = File(main.dataFolder.path)
-    private val userPath = File(main.dataFolder.path + "players/")
+    private val userPath = File(main.dataFolder.path + "/players/")
     var npc: NPC? = null
 
     init {
@@ -31,7 +31,7 @@ class DataManager(main: JobSystem) {
 
     private fun loadUsers() {
         if (!userPath.exists()) {
-            return
+            userPath.mkdirs()
         }
         if (userPath.listFiles() == null || userPath.listFiles()!!.isEmpty()) {
             return

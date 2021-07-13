@@ -7,22 +7,20 @@ class FormattableString(val base: String) {
 
     private var result = base
 
-    fun addPrefix(): FormattableString {
-        result = JobSystem.PREFIX + result
-        return this
-    }
-
     fun replace(old: String, new: String): FormattableString {
-        result.replaceFirst(old, new)
+        result = result.replaceFirst(old, new)
         return this
     }
 
     fun replaceAll(old: String, new: String): FormattableString {
-        result.replace(old, new)
+        result = result.replace(old, new)
         return this
     }
 
-    fun get(formatted: Boolean = true): String {
+    fun get(prefix: Boolean = true, formatted: Boolean = true): String {
+        if (prefix) {
+            result = JobSystem.PREFIX + result
+        }
         return if (formatted) {
             ChatColor.translateAlternateColorCodes('&', result)
         } else {

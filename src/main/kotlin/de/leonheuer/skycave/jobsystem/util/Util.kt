@@ -9,8 +9,9 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.plugin.java.JavaPlugin
-import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object Util {
 
@@ -20,7 +21,7 @@ object Util {
     fun openShop(player: Player) {
         val user = main.dataManager.getUser(player.uniqueId)
         if (user == null) {
-            player.sendMessage(Message.JOB_UNSET.string.addPrefix().get())
+            player.sendMessage(Message.JOB_UNSET.getString().get())
             return
         }
 
@@ -32,6 +33,7 @@ object Util {
         SellItem.values().filter { it.job == user.job }.forEach {
             inv.setItem(slot, CustomItem(it.material, it.amount).setName("§6${it.friendlyName}")
                 .setLore("§7Anzahl: §e${it.amount}", "§7Preis: §e${it.price}$")
+                .addFlag(ItemFlag.HIDE_ATTRIBUTES)
                 .itemStack)
             slot++
         }
@@ -60,9 +62,11 @@ object Util {
                 .setLore("§cDer erste Beruf ist immer kostenlos.")
                 .itemStack)
         } else {
+            val formatter = DateTimeFormatter.ofPattern("dd.MM.yy hh:mm")
             inv.setItem(2, CustomItem(Material.CLOCK, 1)
                 .setName("§6Letzter Berufswechsel:")
-                .setLore("§b${user.jobChangeDate}", "", "§7Du kannst alle 48 Stunden", "§7deinen Beruf wechseln")
+                .setLore("§b${formatter.format(user.jobChangeDate)}",
+                    "", "§7Du kannst alle 48 Stunden", "§7deinen Beruf wechseln")
                 .itemStack)
             inv.setItem(4, CustomItem(user.job.icon, 1)
                 .setName("§6Dein Beruf:")
@@ -79,7 +83,8 @@ object Util {
         var slot = 19
         Job.values().forEach {
             inv.setItem(slot, CustomItem(it.icon, 1)
-                .setName("§b${it.friendlyName}").setLore("§7Klicke für Berufswechsel").itemStack)
+                .setName("§b${it.friendlyName}").setLore("§7Klicke für Berufswechsel")
+                .addFlag(ItemFlag.HIDE_ATTRIBUTES).itemStack)
             slot++
         }
 
@@ -88,18 +93,8 @@ object Util {
 
     private fun placeholders(inv: Inventory, line: Int) {
         for (i in (line-1) * 9 until line * 9) {
-            inv.setItem(i, CustomItem(Material.BLACK_STAINED_GLASS_PANE, 1).setName("").itemStack)
+            inv.setItem(i, CustomItem(Material.BLACK_STAINED_GLASS_PANE, 1).setName("§0").itemStack)
         }
-    }
-
-    fun changeJob(player: Player, job: Job) {
-        val user = main.dataManager.getUser(player.uniqueId)
-        if (user == null) {
-            main.dataManager.createUser(player.uniqueId, job)
-            return
-        }
-        user.job = job
-        user.jobChangeDate = LocalDateTime.now()
     }
 
 }

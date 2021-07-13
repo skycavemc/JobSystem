@@ -7,6 +7,7 @@ import de.leonheuer.skycave.jobsystem.util.Util
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
+import kotlin.math.roundToInt
 
 class PlayerInteractListener(private val main: JobSystem): Listener {
 
@@ -14,21 +15,25 @@ class PlayerInteractListener(private val main: JobSystem): Listener {
     fun onPlayerInteract(event: PlayerInteractAtEntityEvent) {
         val player = event.player
         val entity = event.rightClicked
-        if (main.playerManager.npcSetMode.contains(player.uniqueId)) {
-            main.dataManager.npc = NPC(entity.location, entity.type)
-            player.sendMessage(Message.JOB_ADMIN_SET_NPC_SUCCESS.string
+        val location = entity.location.toBlockLocation()
+        val list = main.playerManager.npcSetMode
+
+        if (list.contains(player.uniqueId)) {
+            main.dataManager.npc = NPC(location, entity.type)
+            player.sendMessage(Message.JOB_ADMIN_SET_NPC_SUCCESS.getString()
                 .replace("%type", entity.type.toString().lowercase())
-                .replace("%x", entity.location.x.toString())
-                .replace("%y", entity.location.y.toString())
-                .replace("%z", entity.location.z.toString())
-                .addPrefix().get()
+                .replace("%x", location.x.toString())
+                .replace("%y", location.y.toString())
+                .replace("%z", location.z.toString())
+                .get()
             )
             main.dataManager.saveNPC()
+            list.remove(player.uniqueId)
             return
         }
 
         val npc = main.dataManager.npc ?: return
-        if (entity.location == npc.location && entity.type == npc.entityType) {
+        if (location == npc.location && entity.type == npc.entityType) {
             Util.openShop(player)
         }
     }

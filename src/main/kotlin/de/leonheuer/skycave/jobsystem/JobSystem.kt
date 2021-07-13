@@ -1,6 +1,7 @@
 package de.leonheuer.skycave.jobsystem
 
 import de.leonheuer.skycave.jobsystem.command.JobCommand
+import de.leonheuer.skycave.jobsystem.listener.InventoryClickListener
 import de.leonheuer.skycave.jobsystem.listener.PlayerInteractListener
 import de.leonheuer.skycave.jobsystem.listener.PlayerJoinListener
 import de.leonheuer.skycave.jobsystem.manager.DataManager
@@ -26,6 +27,7 @@ class JobSystem: JavaPlugin() {
         val pm = Bukkit.getPluginManager()
         pm.registerEvents(PlayerInteractListener(this), this)
         pm.registerEvents(PlayerJoinListener(this), this)
+        pm.registerEvents(InventoryClickListener(this), this)
 
         getCommand("job")!!.setExecutor(JobCommand(this))
     }

@@ -20,20 +20,31 @@ class JobCommand(private val main: JobSystem): CommandExecutor, TabCompleter {
         if (args.isNotEmpty() && sender.hasPermission("skybee.jobsystem.admin")) {
             when (args[0].lowercase()) {
                 "setnpc" -> {
-                    main.playerManager.npcSetMode.add(sender.uniqueId)
-                    sender.sendMessage(Message.JOB_ADMIN_SET_NPC_BEGIN.string.addPrefix().get())
+                    val list = main.playerManager.npcSetMode
+                    if (list.contains(sender.uniqueId)) {
+                        list.remove(sender.uniqueId)
+                        sender.sendMessage(Message.JOB_ADMIN_SET_NPC_BEGIN_ALREADY.getString().get())
+                    } else {
+                        list.add(sender.uniqueId)
+                        sender.sendMessage(Message.JOB_ADMIN_SET_NPC_BEGIN.getString().get())
+                    }
                 }
                 "cancel" -> {
-                    main.playerManager.npcSetMode.remove(sender.uniqueId)
-                    sender.sendMessage(Message.JOB_ADMIN_CANCEL.string.addPrefix().get())
+                    val list = main.playerManager.npcSetMode
+                    if (list.contains(sender.uniqueId)) {
+                        main.playerManager.npcSetMode.remove(sender.uniqueId)
+                        sender.sendMessage(Message.JOB_ADMIN_CANCEL.getString().get())
+                    } else {
+                        sender.sendMessage(Message.JOB_ADMIN_CANCEL_NOT.getString().get())
+                    }
                 }
                 "help" -> {
-                    sender.sendMessage(Message.JOB_ADMIN_HELP_SET_NPC.string.addPrefix().get())
-                    sender.sendMessage(Message.JOB_ADMIN_HELP_CANCEL.string.addPrefix().get())
-                    sender.sendMessage(Message.JOB_ADMIN_HELP_HELP.string.addPrefix().get())
+                    sender.sendMessage(Message.JOB_ADMIN_HELP_SET_NPC.getString().get(prefix = false))
+                    sender.sendMessage(Message.JOB_ADMIN_HELP_CANCEL.getString().get(prefix = false))
+                    sender.sendMessage(Message.JOB_ADMIN_HELP_HELP.getString().get(prefix = false))
                 }
                 else -> {
-                    sender.sendMessage(Message.UNKNOWN_COMMAND.string.addPrefix().get())
+                    sender.sendMessage(Message.UNKNOWN_COMMAND.getString().get())
                 }
             }
             return true
