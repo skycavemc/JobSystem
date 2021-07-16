@@ -5,9 +5,10 @@ import de.leonheuer.skycave.jobsystem.model.FormattableString
 enum class Message(private val message: String) {
 
     UNKNOWN_COMMAND("&cUnbekannter Befehl. Siehe /job help"),
+    INTERNAL_ERROR("&cBei der Jobauswahl ist ein Fehler aufgetreten."),
 
     // job admin help
-    JOB_ADMIN_HELP_SET_NPC("&e/job setnpc &8» &7Setzt den NPC für den Ankauf"),
+    JOB_ADMIN_HELP_SET_NPC("&e/job setnpc &8» &7Setzt den NPC für das GUI"),
     JOB_ADMIN_HELP_CANCEL("&e/job cancel &8» &7Bricht das Setzen des NPCs ab"),
     JOB_ADMIN_HELP_HELP("&e/job help &8» &7Zeigt Hilfe an"),
 

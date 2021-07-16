@@ -2,7 +2,7 @@ package de.leonheuer.skycave.jobsystem.enums
 
 import org.bukkit.Material
 
-enum class SellItem(
+enum class JobSpecificItem(
     val friendlyName: String,
     val material: Material,
     val amount: Int,

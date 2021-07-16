@@ -87,7 +87,7 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                         Util.openGUI(player, GUIView.JOBS)
                         player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
                     }
-                    RequirementResult.PAY -> TODO("confirm gui")
+                    RequirementResult.PAY -> Util.openConfirmGUI(player, job)
                     RequirementResult.NO_MONEY -> {
                         player.sendMessage(Message.JOB_CHANGE_NO_MONEY.getString().get())
                         player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 0.7f)
@@ -99,6 +99,22 @@ class InventoryClickListener(private val main: JobSystem): Listener {
             }
             GUIView.SELL_PERSONAL.getTitle() -> {
                 TODO("sell item")
+            }
+            GUIView.CONFIRM.getTitle() -> {
+                val job = Util.extractJobFromItemMeta(item)
+                val user = main.dataManager.getUser(player.uniqueId)
+                if (job == null || user == null) {
+                    player.sendMessage(Message.INTERNAL_ERROR.getString().get())
+                    return
+                }
+                user.job = job
+                user.jobChangeDate = LocalDateTime.now()
+                main.economy.withdrawPlayer(player, 100000.0)
+                player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
+                    .replace("%job", job.friendlyName).get())
+                player.sendMessage(Message.JOB_CHANGE_PAY.getString().get())
+                Util.openGUI(player, GUIView.JOBS)
+                player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
             }
         }
     }

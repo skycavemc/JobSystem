@@ -10,6 +10,7 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import java.time.format.DateTimeFormatter
 
@@ -95,7 +96,21 @@ object Util {
                     slot++
                 }
             }
-            GUIView.SELL -> TODO("public ankauf")
+            GUIView.SELL -> {
+                var slot = 19
+                GlobalItem.values().forEach {
+                    if (slot.mod(9) == 0) {
+                        slot ++
+                    } else if ((slot + 1).mod(9) == 0) {
+                        slot += 2
+                    }
+                    inv.setItem(slot, CustomItem(it.material, it.amount).setName("§6${it.friendlyName}")
+                        .setLore("§7Anzahl: §e${it.amount}", "§7Preis: §e${it.price}$")
+                        .addFlag(ItemFlag.HIDE_ATTRIBUTES)
+                        .itemStack)
+                    slot++
+                }
+            }
             GUIView.SELL_PERSONAL -> {
                 if (user == null) {
                     player.sendMessage(Message.JOB_UNSET.getString().get())
@@ -104,7 +119,7 @@ object Util {
                 }
 
                 var slot = 19
-                SellItem.values().filter { it.job == user.job }.forEach {
+                JobSpecificItem.values().filter { it.job == user.job }.forEach {
                     if (slot.mod(9) == 0) {
                         slot ++
                     } else if ((slot + 1).mod(9) == 0) {
@@ -120,6 +135,23 @@ object Util {
         }
 
         player.openInventory(inv)
+    }
+
+    @Suppress("Deprecation")
+    fun openConfirmGUI(player: Player, job: Job) {
+        val inv = Bukkit.createInventory(player, 27, GUIView.CONFIRM.getTitle())
+        inv.setItem(11, CustomItem(Material.LIME_CONCRETE, 1)
+            .setName("§aBestätige").setLore("§7Job zu ${job.friendlyName} ändern").itemStack)
+        inv.setItem(15, CustomItem(Material.RED_CONCRETE, 1)
+            .setName("§aLehne ab").setLore("§7Job zu ${job.friendlyName} ändern").itemStack)
+        player.openInventory(inv)
+    }
+
+    @Suppress("Deprecation")
+    fun extractJobFromItemMeta(item: ItemStack): Job? {
+        val lore = item.itemMeta.lore ?: return null
+        val jobName = lore[0].split(" ")[3]
+        return Job.values().firstOrNull { it.friendlyName == jobName }
     }
 
     private fun placeholdersByPattern(inv: Inventory, startRow: Int, vararg pattern: String) {
@@ -156,11 +188,9 @@ object Util {
 
     fun getRequirementResult(player: Player, user: User): RequirementResult {
         if (user.freeJobChanges > 0) {
-            user.freeJobChanges.dec()
             return RequirementResult.USE_FREE
         }
         if (main.economy.getBalance(player) >= 100000.0) {
-            main.economy.withdrawPlayer(player, 100000.0)
             return RequirementResult.PAY
         }
         return RequirementResult.NO_MONEY
