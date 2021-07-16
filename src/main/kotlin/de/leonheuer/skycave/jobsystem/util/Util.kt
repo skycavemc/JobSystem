@@ -132,6 +132,9 @@ object Util {
                     slot++
                 }
             }
+            else -> {
+                // ignored
+            }
         }
 
         player.openInventory(inv)
