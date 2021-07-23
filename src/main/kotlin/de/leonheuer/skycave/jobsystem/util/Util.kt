@@ -23,63 +23,55 @@ object Util {
         val inv = Bukkit.createInventory(player, 45, view.getTitle())
         placeholdersByPattern(inv, 0, "bnnnbnnnb")
 
-        val user = main.dataManager.getUser(player.uniqueId)
-        if (user == null) {
+        val user = main.dataManager.getRegisteredUser(player)
+
+        val date = user.jobChangeDate
+        if (date == null) {
             inv.setItem(1, CustomItem(Material.CLOCK, 1)
                 .setName("§6Letzter Berufswechsel:")
                 .setLore("§cnoch nie")
-                .itemStack)
-            inv.setItem(2, CustomItem(Material.BARRIER, 1)
-                .setName("§6Dein Beruf:")
-                .setLore("§cDu hast keinen Beruf")
-                .itemStack)
-            inv.setItem(3, CustomItem(Material.PAPER, 1)
-                .setName("§6Kostenlose Berufswechsel:")
-                .setLore("§cDer erste Beruf ist immer kostenlos.")
-                .itemStack)
-            inv.setItem(5, CustomItem(Material.FLETCHING_TABLE, 1)
-                .setName("§6Berufe")
-                .setLore("§7Öffnet die Auswahl der Berufe")
-                .itemStack)
-            inv.setItem(6, CustomItem(Material.IRON_INGOT, 1)
-                .setName("§6Allgemeiner Ankauf")
-                .setLore("§7Öffnet den Ankauf")
-                .itemStack)
-            inv.setItem(7, CustomItem(Material.GOLD_INGOT, 1)
-                .setName("§6Persönlicher Ankauf")
-                .setLore("§7Öffnet einen Ankauf, der je", "§7nach Beruf variiert.")
                 .itemStack)
         } else {
             val formatter = DateTimeFormatter.ofPattern("dd.MM.yy hh:mm")
             inv.setItem(1, CustomItem(Material.CLOCK, 1)
                 .setName("§6Letzter Berufswechsel:")
-                .setLore("§b${formatter.format(user.jobChangeDate)}",
+                .setLore("§b${formatter.format(date)}",
                     "", "§7Du kannst alle 48 Stunden", "§7deinen Beruf wechseln")
                 .itemStack)
-            inv.setItem(2, CustomItem(user.job.icon, 1)
+        }
+
+        val job = user.job
+        if (job == null) {
+            inv.setItem(2, CustomItem(Material.BARRIER, 1)
                 .setName("§6Dein Beruf:")
-                .setLore("§b${user.job.friendlyName}", "", "§7Dein Beruf bestimmt, welche Items",
+                .setLore("§cDu hast keinen Beruf")
+                .itemStack)
+        } else {
+            inv.setItem(2, CustomItem(job.icon, 1)
+                .setName("§6Dein Beruf:")
+                .setLore("§b${job.friendlyName}", "", "§7Dein Beruf bestimmt, welche Items",
                     "§7du bei dem persönlichen", "§7Ankauf verkaufen kannst.")
                 .addFlag(ItemFlag.HIDE_ATTRIBUTES)
                 .itemStack)
-            inv.setItem(3, CustomItem(Material.PAPER, 1)
-                .setName("§6Kostenlose Berufswechsel:")
-                .setLore("§7Du kannst noch §b${user.freeJobChanges} mal", "§7kostenlos deinen Beruf wechseln.",
-                    "", "§7Hast du keinen kostenlosen Wechsel", "§7mehr übrig, musst du §6100.000$ §7zahlen.")
-                .itemStack)
-            inv.setItem(5, CustomItem(Material.FLETCHING_TABLE, 1)
-                .setName("§6Berufe")
-                .setLore("§7Öffnet die Auswahl der Berufe")
-                .itemStack)
-            inv.setItem(6, CustomItem(Material.IRON_INGOT, 1)
-                .setName("§6Allgemeiner Ankauf")
-                .setLore("§7Öffnet den Ankauf")
-                .itemStack)
-            inv.setItem(7, CustomItem(Material.GOLD_INGOT, 1)
-                .setName("§6Persönlicher Ankauf")
-                .setLore("§7Öffnet einen Ankauf, der je", "§7nach Beruf variiert.")
-                .itemStack)
         }
+
+        inv.setItem(3, CustomItem(Material.PAPER, 1)
+            .setName("§6Kostenlose Berufswechsel:")
+            .setLore("§7Du kannst noch §b${user.freeJobChanges} mal", "§7kostenlos deinen Beruf wechseln.",
+                "", "§7Hast du keinen kostenlosen Wechsel", "§7mehr übrig, musst du §6100.000$ §7zahlen.")
+            .itemStack)
+        inv.setItem(5, CustomItem(Material.FLETCHING_TABLE, 1)
+            .setName("§6Berufe")
+            .setLore("§7Öffnet die Auswahl der Berufe")
+            .itemStack)
+        inv.setItem(6, CustomItem(Material.IRON_INGOT, 1)
+            .setName("§6Allgemeiner Ankauf")
+            .setLore("§7Öffnet den Ankauf")
+            .itemStack)
+        inv.setItem(7, CustomItem(Material.GOLD_INGOT, 1)
+            .setName("§6Persönlicher Ankauf")
+            .setLore("§7Öffnet einen Ankauf, der je", "§7nach Beruf variiert.")
+            .itemStack)
 
         when (view) {
             GUIView.JOBS -> {
@@ -112,7 +104,7 @@ object Util {
                 }
             }
             GUIView.SELL_PERSONAL -> {
-                if (user == null) {
+                if (job == null) {
                     player.sendMessage(Message.JOB_UNSET.getString().get())
                     player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 0.7f)
                     return
@@ -132,9 +124,7 @@ object Util {
                     slot++
                 }
             }
-            else -> {
-                // ignored
-            }
+            else -> throw IllegalArgumentException()
         }
 
         player.openInventory(inv)

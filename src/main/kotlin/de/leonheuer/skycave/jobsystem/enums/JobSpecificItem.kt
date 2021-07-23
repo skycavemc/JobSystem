@@ -8,7 +8,7 @@ enum class JobSpecificItem(
     val material: Material,
     val amount: Int,
     val price: Int,
-    val job: Job?
+    val job: Job
     ) {
 
     // forester items

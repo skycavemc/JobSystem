@@ -6,7 +6,7 @@ import java.util.*
 
 data class User(
     val uuid: UUID,
-    var job: Job,
-    var jobChangeDate: LocalDateTime,
+    var job: Job?,
+    var jobChangeDate: LocalDateTime?,
     var freeJobChanges: Int,
     )

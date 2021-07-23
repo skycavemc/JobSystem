@@ -5,7 +5,7 @@ import de.leonheuer.skycave.jobsystem.command.JobCommand
 import de.leonheuer.skycave.jobsystem.command.SellCommand
 import de.leonheuer.skycave.jobsystem.listener.InventoryClickListener
 import de.leonheuer.skycave.jobsystem.listener.PlayerInteractListener
-import de.leonheuer.skycave.jobsystem.listener.PlayerJoinListener
+import de.leonheuer.skycave.jobsystem.listener.PlayerJoinLeaveListener
 import de.leonheuer.skycave.jobsystem.manager.DataManager
 import de.leonheuer.skycave.jobsystem.manager.PlayerManager
 import net.milkbowl.vault.economy.Economy
@@ -32,7 +32,7 @@ class JobSystem: JavaPlugin() {
 
         val pm = Bukkit.getPluginManager()
         pm.registerEvents(PlayerInteractListener(this), this)
-        pm.registerEvents(PlayerJoinListener(this), this)
+        pm.registerEvents(PlayerJoinLeaveListener(this), this)
         pm.registerEvents(InventoryClickListener(this), this)
 
         getCommand("job")!!.setExecutor(JobCommand(this))
@@ -41,7 +41,7 @@ class JobSystem: JavaPlugin() {
     }
 
     override fun onDisable() {
-        dataManager.saveUsers()
+        dataManager.unregisterAllUsers()
         dataManager.saveNPC()
     }
 

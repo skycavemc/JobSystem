@@ -56,10 +56,10 @@ class InventoryClickListener(private val main: JobSystem): Listener {
         when (player.openInventory.title) {
             GUIView.JOBS.getTitle() -> {
                 val job = Job.fromItemStack(item) ?: return
+                val user = main.dataManager.getRegisteredUser(player)
+                val date = user.jobChangeDate
 
-                val user = main.dataManager.getUser(player.uniqueId)
-                if (user == null) {
-                    main.dataManager.createUser(player.uniqueId, job)
+                if (date == null) {
                     player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString().replace("%job", job.friendlyName).get())
                     Util.openGUI(player, GUIView.JOBS)
                     player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
@@ -96,18 +96,19 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                 Util.sellItem(player, sellItem, -1)
             }
             GUIView.SELL_PERSONAL.getTitle() -> {
-                val user = main.dataManager.getUser(player.uniqueId)
-                if (user == null) {
+                val user = main.dataManager.getRegisteredUser(player)
+                val job = user.job
+                if (job == null) {
                     player.sendMessage(Message.SELL_JOB_REQUIRED.getString().get())
                     return
                 }
-                val sellItem = JobSpecificItem.fromItemStack(item, user.job) ?: return
+                val sellItem = JobSpecificItem.fromItemStack(item, job) ?: return
                 Util.sellItem(player, sellItem, -1)
             }
             GUIView.CONFIRM.getTitle() -> {
                 val job = Util.extractJobFromItemMeta(item)
-                val user = main.dataManager.getUser(player.uniqueId)
-                if (job == null || user == null) {
+                val user = main.dataManager.getRegisteredUser(player)
+                if (job == null) {
                     player.sendMessage(Message.INTERNAL_ERROR.getString().get())
                     return
                 }

@@ -4,9 +4,11 @@ import de.leonheuer.skycave.jobsystem.JobSystem
 import de.leonheuer.skycave.jobsystem.enums.Job
 import de.leonheuer.skycave.jobsystem.model.NPC
 import de.leonheuer.skycave.jobsystem.model.User
+import de.leonheuer.skycave.jobsystem.util.DataUtil
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import org.json.simple.parser.ParseException
@@ -25,38 +27,10 @@ class DataManager(main: JobSystem) {
     var npc: NPC? = null
 
     init {
-        loadUsers()
-        loadNPC()
-    }
-
-    private fun loadUsers() {
         if (!userPath.exists()) {
             userPath.mkdirs()
         }
-        if (userPath.listFiles() == null || userPath.listFiles()!!.isEmpty()) {
-            return
-        }
-        val parser = JSONParser()
-        userPath.listFiles()!!.filter { it.isFile }.forEach {
-            try {
-                val reader = FileReader(it)
-                val user = parser.parse(reader) as JSONObject
-                userList.add(User(
-                    UUID.fromString(user["uuid"] as String),
-                    Job.valueOf(user["job"] as String),
-                    LocalDateTime.parse(user["jobChangeDate"] as String),
-                    (user["freeJobChanges"] as Long).toInt()
-                ))
-            } catch (e: IOException) {
-                e.printStackTrace()
-            } catch (e: NullPointerException) {
-                e.printStackTrace()
-            } catch (e: ClassCastException) {
-                e.printStackTrace()
-            } catch (e: ParseException) {
-                e.printStackTrace()
-            }
-        }
+        loadNPC()
     }
 
     private fun loadNPC() {
@@ -89,17 +63,32 @@ class DataManager(main: JobSystem) {
         }
     }
 
-    fun getUser(uuid: UUID): User? {
-        return userList.firstOrNull { it.uuid == uuid }
-    }
-
-    fun createUser(uuid: UUID, job: Job) {
-        val user = User(uuid, job, LocalDateTime.now(),Job.values().size)
+    fun registerUser(player: Player) {
+        val user = DataUtil.getUser(player.uniqueId)
+        if (user == null) {
+            userList.add(DataUtil.createAndGetUser(player))
+            return
+        }
         userList.add(user)
-        saveUser(user)
     }
 
-    fun saveUsers() {
+    fun isRegistered(uuid: UUID): Boolean {
+        return userList.any { it.uuid == uuid }
+    }
+
+    fun getRegisteredUser(player: Player): User {
+        return userList.first { it.uuid == player.uniqueId }
+    }
+
+    fun unregisterUser(uuid: UUID) {
+        val user = userList.firstOrNull { it.uuid == uuid }
+        if (user != null) {
+            DataUtil.saveUser(user)
+        }
+        userList.remove(user)
+    }
+
+    fun unregisterAllUsers() {
         if (userList.isEmpty()) {
             return
         }
@@ -107,28 +96,7 @@ class DataManager(main: JobSystem) {
             userPath.mkdirs()
         }
         userList.forEach {
-            saveUser(it)
-        }
-    }
-
-    fun saveUser(user: User) {
-        try {
-            val file = File(userPath, "${user.uuid}.json")
-            if (!file.exists()) {
-                file.createNewFile()
-            }
-
-            val obj = JSONObject()
-            obj["uuid"] = user.uuid.toString()
-            obj["job"] = user.job.toString()
-            obj["jobChangeDate"] = user.jobChangeDate.toString()
-            obj["freeJobChanges"] = user.freeJobChanges
-
-            val writer = FileWriter(file)
-            writer.write(obj.toJSONString())
-            writer.flush()
-        } catch (e: IOException) {
-            e.printStackTrace()
+            unregisterUser(it.uuid)
         }
     }
 
