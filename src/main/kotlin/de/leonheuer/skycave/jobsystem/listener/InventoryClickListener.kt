@@ -3,6 +3,7 @@ package de.leonheuer.skycave.jobsystem.listener
 import de.leonheuer.skycave.jobsystem.JobSystem
 import de.leonheuer.skycave.jobsystem.enums.*
 import de.leonheuer.skycave.jobsystem.util.Util
+import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -85,13 +86,13 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                     RequirementResult.USE_FREE -> {
                         user.job = job
                         user.jobChangeDate = LocalDateTime.now()
-                        user.freeJobChanges.dec()
+                        user.freeJobChanges -= 1
+                        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
                         player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
                             .replace("%job", job.friendlyName).get())
                         player.sendMessage(Message.JOB_CHANGE_USE_FREE.getString()
                             .replace("%amount", user.freeJobChanges.toString()).get())
                         Util.openGUI(player, GUIView.JOBS)
-                        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
                     }
                     RequirementResult.PAY -> Util.openConfirmGUI(player, job)
                     RequirementResult.NO_MONEY -> {
@@ -115,20 +116,26 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                 Util.sellItem(player, sellItem)
             }
             GUIView.CONFIRM.getTitle() -> {
-                val job = Util.extractJobFromItemMeta(item)
-                val user = main.dataManager.getRegisteredUser(player)
-                if (job == null) {
-                    player.sendMessage(Message.INTERNAL_ERROR.getString().get())
-                    return
+                if (item.type == Material.RED_CONCRETE) {
+                    player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f)
+                    player.sendMessage(Message.JOB_CHANGE_ABORT.getString().get())
                 }
-                user.job = job
-                user.jobChangeDate = LocalDateTime.now()
-                main.economy.withdrawPlayer(player, 100000.0)
-                player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
-                    .replace("%job", job.friendlyName).get())
-                player.sendMessage(Message.JOB_CHANGE_PAY.getString().get())
+                if (item.type == Material.LIME_CONCRETE) {
+                    val job = Util.extractJobFromItemMeta(item)
+                    val user = main.dataManager.getRegisteredUser(player)
+                    if (job == null) {
+                        player.sendMessage(Message.INTERNAL_ERROR.getString().get())
+                        return
+                    }
+                    user.job = job
+                    user.jobChangeDate = LocalDateTime.now()
+                    main.economy.withdrawPlayer(player, 100000.0)
+                    player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+                    player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
+                        .replace("%job", job.friendlyName).get())
+                    player.sendMessage(Message.JOB_CHANGE_PAY.getString().get())
+                }
                 Util.openGUI(player, GUIView.JOBS)
-                player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
             }
         }
     }

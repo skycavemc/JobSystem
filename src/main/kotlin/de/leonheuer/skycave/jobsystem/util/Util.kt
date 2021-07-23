@@ -145,13 +145,13 @@ object Util {
                 } else {
                     main.playerManager.calculateAmount[uuid]!!
                 }
-                var slot = 19
+                var slot = 9
                 JobSpecificItem.values().filter { it.job == user.job }.forEach {
-                    if (slot.mod(9) == 0) {
+                    /*if (slot.mod(9) == 0) {
                         slot ++
                     } else if ((slot + 1).mod(9) == 0) {
                         slot += 2
-                    }
+                    }*/
                     val price = DecimalFormat("#.##").format((it.price / it.amount) * calc)
                     inv.setItem(slot, CustomItem(it.material, 1).setName("§6${it.friendlyName}")
                         .setLore("§8- §7Umrechnung §8-",
@@ -208,17 +208,25 @@ object Util {
     @Suppress("Deprecation")
     fun openConfirmGUI(player: Player, job: Job) {
         val inv = Bukkit.createInventory(player, 27, GUIView.CONFIRM.getTitle())
+        placeholdersByPattern(inv, 0,
+            "ngggnrrrn",
+            "ngngnrnrn",
+            "ngggnrrrn"
+        )
         inv.setItem(11, CustomItem(Material.LIME_CONCRETE, 1)
-            .setName("§aBestätige").setLore("§7Job zu ${job.friendlyName} ändern").itemStack)
+            .setName("§aBestätige").setLore("§7Du zahlst 100.000$.", "§7Dein Job wird zu ${job.friendlyName} geändert.")
+            .itemStack)
         inv.setItem(15, CustomItem(Material.RED_CONCRETE, 1)
-            .setName("§aLehne ab").setLore("§7Job zu ${job.friendlyName} ändern").itemStack)
+            .setName("§cLehne ab").setLore("§7Du zahlst kein Geld.", "§7Dein Job wird nicht geändert.")
+            .itemStack)
         player.openInventory(inv)
     }
 
     @Suppress("Deprecation")
     fun extractJobFromItemMeta(item: ItemStack): Job? {
         val lore = item.itemMeta.lore ?: return null
-        val jobName = lore[0].split(" ")[3]
+        val jobName = lore[1].split(" ")[4]
+        println(jobName)
         return Job.values().firstOrNull { it.friendlyName == jobName }
     }
 
@@ -249,6 +257,8 @@ object Util {
             "n" -> null
             "w" -> Material.WHITE_STAINED_GLASS_PANE
             "b" -> Material.BLACK_STAINED_GLASS_PANE
+            "g" -> Material.LIME_STAINED_GLASS_PANE
+            "r" -> Material.RED_STAINED_GLASS_PANE
             else -> null
         }
     }
