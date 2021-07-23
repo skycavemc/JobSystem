@@ -27,6 +27,7 @@ class JobSystem: JavaPlugin() {
 
     override fun onEnable() {
         dataManager = DataManager(this)
+        Bukkit.getOnlinePlayers().forEach(dataManager::registerUser)
         playerManager = PlayerManager()
         economy = server.servicesManager.getRegistration(Economy::class.java)!!.provider
 

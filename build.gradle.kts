@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "de.leonheuer.skycave"
-version = "1.0.0-pre"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
