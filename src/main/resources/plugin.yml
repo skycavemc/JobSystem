@@ -10,3 +10,7 @@ depend:
 commands:
   job:
     aliases: jobs
+  sell:
+    aliases: ankauf
+  gsell:
+    aliases: gankauf, globalsell

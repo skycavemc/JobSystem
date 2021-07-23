@@ -170,7 +170,6 @@ object Util {
                     continue
                 }
                 val mat = patternToMaterial(identifier)
-                println(mat)
                 if (mat != null) {
                     inv.setItem(slot, CustomItem(mat, 1).setName("§0").itemStack)
                 }
@@ -197,6 +196,62 @@ object Util {
             return RequirementResult.PAY
         }
         return RequirementResult.NO_MONEY
+    }
+
+    fun sellItem(player: Player, item: JobSpecificItem, maxAmount: Int) {
+        var amount = getItemAmount(player.inventory, item.material)
+        if (amount == 0) {
+            player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f)
+            player.sendMessage(Message.SELL_NOT_ENOUGH.getString().replace("%name", item.friendlyName).get())
+            return
+        }
+
+        if (maxAmount in 1 until amount) {
+            amount = maxAmount
+        }
+
+        val reward = item.price * (amount.toDouble() / item.amount)
+        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+        player.sendMessage(Message.SELL_SOLD.getString()
+            .replace("%amount", amount.toString())
+            .replace("%name", item.friendlyName)
+            .replace("%reward", reward.toString())
+            .get())
+        player.inventory.removeItem(ItemStack(item.material, amount))
+        main.economy.depositPlayer(player, reward)
+        main.logger.info("${player.name} (UUID: ${player.uniqueId}) sold ${amount}x ${item.material} " +
+                "for $reward to the admin shop")
+    }
+
+    fun sellItem(player: Player, item: GlobalItem, maxAmount: Int) {
+        var amount = getItemAmount(player.inventory, item.material)
+        if (amount == 0) {
+            player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f)
+            player.sendMessage(Message.SELL_NOT_ENOUGH.getString().replace("%name", item.friendlyName).get())
+            return
+        }
+
+        if (maxAmount in 1 until amount) {
+            amount = maxAmount
+        }
+
+        val reward = item.price * (amount.toDouble() / item.amount)
+        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+        player.sendMessage(Message.SELL_SOLD.getString()
+            .replace("%amount", amount.toString())
+            .replace("%name", item.friendlyName)
+            .replace("%reward", reward.toString())
+            .get())
+        player.inventory.removeItem(ItemStack(item.material, amount))
+        main.economy.depositPlayer(player, reward)
+        main.logger.info("${player.name} (UUID: ${player.uniqueId}) sold ${amount}x ${item.material} " +
+                "for $reward to the admin shop")
+    }
+
+    private fun getItemAmount(inv: Inventory, material: Material): Int {
+        var amount = 0
+        inv.filter { it != null && it.type == material }.forEach { amount += it.amount }
+        return amount
     }
 
 }

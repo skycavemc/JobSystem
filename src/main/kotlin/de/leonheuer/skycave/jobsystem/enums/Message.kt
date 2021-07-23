@@ -28,6 +28,11 @@ enum class Message(private val message: String) {
     JOB_CHANGE_USE_FREE("&eDu hast deinen Job kostenlos gewechselt. Es verbleiben %amount kostenlose Wechsel."),
     JOB_CHANGE_PAY("&eDu hast deinen Job für 100.000$ gewechselt."),
     JOB_CHANGE_NO_MONEY("&cDu hast nicht genug Geld um deinen Beruf zu wechseln."),
+
+    // sell item messages
+    SELL_NOT_ENOUGH("&cDu hast nicht genug %name."),
+    SELL_SOLD("&7Du hast &a%amountx %name &7für &a%reward$ &7verkauft."),
+    SELL_JOB_REQUIRED("&cDu brauchst einen Job, um dieses Item zu verkaufen."),
     ;
 
     fun getString(): FormattableString {

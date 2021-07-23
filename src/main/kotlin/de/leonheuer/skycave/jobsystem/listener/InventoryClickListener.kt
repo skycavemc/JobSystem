@@ -1,10 +1,7 @@
 package de.leonheuer.skycave.jobsystem.listener
 
 import de.leonheuer.skycave.jobsystem.JobSystem
-import de.leonheuer.skycave.jobsystem.enums.GUIView
-import de.leonheuer.skycave.jobsystem.enums.Job
-import de.leonheuer.skycave.jobsystem.enums.Message
-import de.leonheuer.skycave.jobsystem.enums.RequirementResult
+import de.leonheuer.skycave.jobsystem.enums.*
 import de.leonheuer.skycave.jobsystem.util.Util
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -95,10 +92,17 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                 }
             }
             GUIView.SELL.getTitle() -> {
-                TODO("sell item")
+                val sellItem = GlobalItem.fromItemStack(item) ?: return
+                Util.sellItem(player, sellItem, -1)
             }
             GUIView.SELL_PERSONAL.getTitle() -> {
-                TODO("sell item")
+                val user = main.dataManager.getUser(player.uniqueId)
+                if (user == null) {
+                    player.sendMessage(Message.SELL_JOB_REQUIRED.getString().get())
+                    return
+                }
+                val sellItem = JobSpecificItem.fromItemStack(item, user.job) ?: return
+                Util.sellItem(player, sellItem, -1)
             }
             GUIView.CONFIRM.getTitle() -> {
                 val job = Util.extractJobFromItemMeta(item)
