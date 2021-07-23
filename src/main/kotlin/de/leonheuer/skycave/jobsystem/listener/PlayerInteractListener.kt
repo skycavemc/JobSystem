@@ -1,6 +1,7 @@
 package de.leonheuer.skycave.jobsystem.listener
 
 import de.leonheuer.skycave.jobsystem.JobSystem
+import de.leonheuer.skycave.jobsystem.enums.CustomSound
 import de.leonheuer.skycave.jobsystem.enums.GUIView
 import de.leonheuer.skycave.jobsystem.enums.Message
 import de.leonheuer.skycave.jobsystem.model.NPC
@@ -35,7 +36,7 @@ class PlayerInteractListener(private val main: JobSystem): Listener {
 
         val npc = main.dataManager.npc ?: return
         if (location.toVector() == npc.location.toVector() && entity.type == npc.entityType) {
-            player.playSound(player.location, Sound.ENTITY_VILLAGER_CELEBRATE, 1.0f, 1.0f)
+            CustomSound.VILLAGER_OPEN.playTo(player)
             Util.openGUI(player, GUIView.JOBS)
         }
     }

@@ -136,7 +136,7 @@ object Util {
             GUIView.SELL_PERSONAL -> {
                 if (job == null) {
                     player.sendMessage(Message.JOB_UNSET.getString().get())
-                    player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 0.7f)
+                    CustomSound.ERROR.playTo(player)
                     return
                 }
 
@@ -277,7 +277,7 @@ object Util {
         val maxAmount = main.playerManager.sellAmount.getOrDefault(player.uniqueId, 1)
         var amount = getItemAmount(player.inventory, item.material)
         if (amount == 0) {
-            player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f)
+            CustomSound.ERROR.playTo(player)
             player.sendMessage(Message.SELL_NOT_ENOUGH.getString().replace("%name", item.friendlyName).get())
             return
         }
@@ -286,7 +286,7 @@ object Util {
         }
 
         val reward = item.price * (amount.toDouble() / item.amount)
-        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+        CustomSound.SUCCESS.playTo(player)
         player.sendMessage(Message.SELL_SOLD.getString()
             .replace("%amount", amount.toString())
             .replace("%name", item.friendlyName)
@@ -302,7 +302,7 @@ object Util {
         val maxAmount = main.playerManager.sellAmount.getOrDefault(player.uniqueId, 1)
         var amount = getItemAmount(player.inventory, item.material)
         if (amount == 0) {
-            player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f)
+            CustomSound.ERROR.playTo(player)
             player.sendMessage(Message.SELL_NOT_ENOUGH.getString().replace("%name", item.friendlyName).get())
             return
         }
@@ -311,7 +311,7 @@ object Util {
         }
 
         val reward = item.price * (amount.toDouble() / item.amount)
-        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+        CustomSound.SUCCESS.playTo(player)
         player.sendMessage(Message.SELL_SOLD.getString()
             .replace("%amount", amount.toString())
             .replace("%name", item.friendlyName)

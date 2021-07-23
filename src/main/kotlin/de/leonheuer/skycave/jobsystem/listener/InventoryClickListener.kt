@@ -32,28 +32,28 @@ class InventoryClickListener(private val main: JobSystem): Listener {
         // control items
         when (item.itemMeta.displayName) {
             "§6Berufe" -> {
-                player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
+                CustomSound.CLICK.playTo(player)
                 Util.openGUI(player, GUIView.JOBS)
                 return
             }
             "§6Allgemeiner Ankauf" -> {
-                player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
+                CustomSound.CLICK.playTo(player)
                 Util.openGUI(player, GUIView.SELL)
                 return
             }
             "§6Persönlicher Ankauf" -> {
-                player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
+                CustomSound.CLICK.playTo(player)
                 Util.openGUI(player, GUIView.SELL_PERSONAL)
                 return
             }
             "§bUmrechnung" -> {
-                player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
+                CustomSound.CLICK.playTo(player)
                 Util.setNextCalcAmount(player.uniqueId)
                 Util.openGUI(player, view)
                 return
             }
             "§bVerkauf" -> {
-                player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
+                CustomSound.CLICK.playTo(player)
                 Util.setNextSellAmount(player.uniqueId)
                 Util.openGUI(player, view)
                 return
@@ -70,15 +70,15 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                 if (date == null) {
                     user.job = job
                     user.jobChangeDate = LocalDateTime.now()
+                    CustomSound.SUCCESS.playTo(player)
                     player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString().replace("%job", job.friendlyName).get())
                     Util.openGUI(player, GUIView.JOBS)
-                    player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
                     return
                 }
 
                 if (Duration.between(user.jobChangeDate, LocalDateTime.now()).toHours() < 48) {
+                    CustomSound.ERROR.playTo(player)
                     player.sendMessage(Message.JOB_CHANGE_WAIT.getString().get())
-                    player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 0.7f)
                     return
                 }
 
@@ -87,7 +87,7 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                         user.job = job
                         user.jobChangeDate = LocalDateTime.now()
                         user.freeJobChanges -= 1
-                        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+                        CustomSound.SUCCESS.playTo(player)
                         player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
                             .replace("%job", job.friendlyName).get())
                         player.sendMessage(Message.JOB_CHANGE_USE_FREE.getString()
@@ -96,8 +96,8 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                     }
                     RequirementResult.PAY -> Util.openConfirmGUI(player, job)
                     RequirementResult.NO_MONEY -> {
+                        CustomSound.ERROR.playTo(player)
                         player.sendMessage(Message.JOB_CHANGE_NO_MONEY.getString().get())
-                        player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 0.7f)
                     }
                 }
             }
@@ -117,7 +117,7 @@ class InventoryClickListener(private val main: JobSystem): Listener {
             }
             GUIView.CONFIRM.getTitle() -> {
                 if (item.type == Material.RED_CONCRETE) {
-                    player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f)
+                    CustomSound.ERROR.playTo(player)
                     player.sendMessage(Message.JOB_CHANGE_ABORT.getString().get())
                 }
                 if (item.type == Material.LIME_CONCRETE) {
@@ -130,7 +130,7 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                     user.job = job
                     user.jobChangeDate = LocalDateTime.now()
                     main.economy.withdrawPlayer(player, 100000.0)
-                    player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+                    CustomSound.SUCCESS.playTo(player)
                     player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
                         .replace("%job", job.friendlyName).get())
                     player.sendMessage(Message.JOB_CHANGE_PAY.getString().get())
