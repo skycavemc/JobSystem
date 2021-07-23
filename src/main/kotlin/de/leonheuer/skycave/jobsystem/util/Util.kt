@@ -167,21 +167,21 @@ object Util {
     private fun getCalcAmountLine(uuid: UUID, amount: Int): String {
         val actual = main.playerManager.calculateAmount.getOrDefault(uuid, 1)
         val prefix = if (actual == amount) {
-            "§a⯈ §2"
+            "§a▸ §2"
         } else {
-            "§7"
+            "§c "
         }
-        return "$prefix $amount Stück"
+        return "$prefix$amount Stück"
     }
 
     private fun getSellAmountLine(uuid: UUID, amount: Int): String {
         val actual = main.playerManager.sellAmount.getOrDefault(uuid, 1)
         val prefix = if (actual == amount) {
-            "§a⯈ §2"
+            "§a▸ §2"
         } else {
-            "§7"
+            "§c "
         }
-        return "$prefix $amount Stück"
+        return "$prefix$amount Stück"
     }
 
     fun setNextCalcAmount(uuid: UUID) {
@@ -220,7 +220,7 @@ object Util {
     }
 
     private fun placeholdersByPattern(inv: Inventory, startRow: Int, vararg pattern: String) {
-        var lineCount = startRow
+        var lineCount = startRow * 9
         for (line in pattern) {
             if (line.length != 9) {
                 continue

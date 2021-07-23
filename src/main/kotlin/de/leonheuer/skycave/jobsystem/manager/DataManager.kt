@@ -95,9 +95,8 @@ class DataManager(main: JobSystem) {
         if (!userPath.exists()) {
             userPath.mkdirs()
         }
-        userList.forEach {
-            unregisterUser(it.uuid)
-        }
+        userList.forEach(DataUtil::saveUser)
+        userList.clear()
     }
 
     fun saveNPC() {
