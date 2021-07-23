@@ -67,6 +67,8 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                 val date = user.jobChangeDate
 
                 if (date == null) {
+                    user.job = job
+                    user.jobChangeDate = LocalDateTime.now()
                     player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString().replace("%job", job.friendlyName).get())
                     Util.openGUI(player, GUIView.JOBS)
                     player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)

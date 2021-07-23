@@ -31,12 +31,22 @@ object DataUtil {
         try {
             val reader = FileReader(file)
             val user = parser.parse(reader) as JSONObject
-            return User(
-                UUID.fromString(user["uuid"] as String),
-                Job.valueOf(user["job"] as String),
-                LocalDateTime.parse(user["jobChangeDate"] as String),
-                (user["freeJobChanges"] as Long).toInt()
-            )
+
+            val rawJob = user["job"] as String
+            val job = if (rawJob == "null") {
+                null
+            } else {
+                Job.valueOf(rawJob)
+            }
+
+            val rawDate = user["jobChangeDate"] as String
+            val date = if (rawDate == "null") {
+                null
+            } else {
+                LocalDateTime.parse(rawDate)
+            }
+
+            return User(UUID.fromString(user["uuid"] as String), job, date, (user["freeJobChanges"] as Long).toInt())
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: NullPointerException) {

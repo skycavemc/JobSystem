@@ -12,6 +12,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
+import java.text.DecimalFormat
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -35,7 +36,7 @@ object Util {
                 .setLore("§cnoch nie")
                 .itemStack)
         } else {
-            val formatter = DateTimeFormatter.ofPattern("dd.MM.yy hh:mm")
+            val formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm")
             inv.setItem(1, CustomItem(Material.CLOCK, 1)
                 .setName("§6Letzter Berufswechsel:")
                 .setLore("§b${formatter.format(date)}",
@@ -123,9 +124,10 @@ object Util {
                     } else if ((slot + 1).mod(9) == 0) {
                         slot += 2
                     }
-                    inv.setItem(slot, CustomItem(it.material, it.amount).setName("§6${it.friendlyName}")
+                    val price = DecimalFormat("#.###").format((it.price / it.amount) * calc)
+                    inv.setItem(slot, CustomItem(it.material, 1).setName("§6${it.friendlyName}")
                         .setLore("§8- §7Umrechnung §8-",
-                            "§eAnzahl: §6$calc", "§ePreis: §6${(it.price / it.amount) * calc}$")
+                            "§eAnzahl: §6$calc", "§ePreis: §6$price$")
                         .addFlag(ItemFlag.HIDE_ATTRIBUTES)
                         .itemStack)
                     slot++
@@ -150,9 +152,10 @@ object Util {
                     } else if ((slot + 1).mod(9) == 0) {
                         slot += 2
                     }
-                    inv.setItem(slot, CustomItem(it.material, it.amount).setName("§6${it.friendlyName}")
+                    val price = DecimalFormat("#.##").format((it.price / it.amount) * calc)
+                    inv.setItem(slot, CustomItem(it.material, 1).setName("§6${it.friendlyName}")
                         .setLore("§8- §7Umrechnung §8-",
-                            "§eAnzahl: §6$calc", "§ePreis: §6${(it.price / it.amount) * calc}$")
+                            "§eAnzahl: §6$calc", "§ePreis: §6$price$")
                         .addFlag(ItemFlag.HIDE_ATTRIBUTES)
                         .itemStack)
                     slot++

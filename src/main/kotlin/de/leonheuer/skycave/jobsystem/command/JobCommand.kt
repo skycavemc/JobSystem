@@ -18,6 +18,7 @@ class JobCommand(private val main: JobSystem): CommandExecutor, TabCompleter {
             sender.sendMessage("§cThis command is for players only.")
             return true
         }
+
         if (args.isNotEmpty() && sender.hasPermission("skybee.jobsystem.admin")) {
             when (args[0].lowercase()) {
                 "setnpc" -> {
@@ -43,6 +44,9 @@ class JobCommand(private val main: JobSystem): CommandExecutor, TabCompleter {
                     sender.sendMessage(Message.JOB_ADMIN_HELP_SET_NPC.getString().get(prefix = false))
                     sender.sendMessage(Message.JOB_ADMIN_HELP_CANCEL.getString().get(prefix = false))
                     sender.sendMessage(Message.JOB_ADMIN_HELP_HELP.getString().get(prefix = false))
+                }
+                "resettimer" -> {
+                    main.dataManager.getRegisteredUser(sender).jobChangeDate = null
                 }
                 else -> {
                     sender.sendMessage(Message.UNKNOWN_COMMAND.getString().get())
