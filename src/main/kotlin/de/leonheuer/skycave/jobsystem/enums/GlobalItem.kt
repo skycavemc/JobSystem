@@ -7,11 +7,12 @@ enum class GlobalItem (
     val friendlyName: String,
     val material: Material,
     val amount: Int,
-    val price: Int,
-    val fixedAmount: Boolean,
+    val price: Double,
 ) {
 
-    IRON_INGOT("Eisenerz", Material.IRON_INGOT, 1, 1, false),
+    IRON_INGOT("Eisen", Material.IRON_INGOT, 1, 1.0),
+    GOLD_INGOT("Gold", Material.IRON_INGOT, 1, 5.0),
+    REDSTONE("Redstone", Material.REDSTONE, 1, 6.0),
 
     ;
 

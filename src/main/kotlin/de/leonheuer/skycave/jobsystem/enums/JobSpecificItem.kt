@@ -7,27 +7,32 @@ enum class JobSpecificItem(
     val friendlyName: String,
     val material: Material,
     val amount: Int,
-    val price: Int,
+    val price: Double,
     val job: Job
     ) {
 
     // forester items
-    OAK_LOG("Eichenstamm", Material.OAK_LOG, 1, 1, Job.FORESTER),
+    OAK_LOG("Eichenstamm", Material.OAK_LOG, 1, 1.0, Job.FORESTER),
 
     // miner items
-    DIAMOND("Diamant", Material.DIAMOND, 1, 1, Job.MINER),
+    IRON_ORE("Eisenerz", Material.IRON_ORE, 1, 2.2, Job.MINER),
+    GOLD_ORE("Golderz", Material.GOLD_ORE, 1, 7.0, Job.MINER),
+    DIAMOND("Diamant", Material.DIAMOND, 1, 55.0, Job.MINER),
+    LAPIS_LAZULI("Lapis", Material.LAPIS_LAZULI, 1, 3.0, Job.MINER),
+    COAL("Kohle", Material.COAL, 64, 8.0, Job.MINER),
+    COBBLESTONE("Bruchstein", Material.COBBLESTONE, 2304, 200.0, Job.MINER),
 
     // farmer items
-    CARROT("Karotte", Material.CARROT, 1, 1, Job.FARMER),
+    CARROT("Karotte", Material.CARROT, 1, 1.0, Job.FARMER),
 
     // botanist items
-    POPPY("Botaniker", Material.POPPY, 1, 1, Job.BOTANIST),
+    POPPY("Botaniker", Material.POPPY, 1, 1.0, Job.BOTANIST),
 
     // diver items
-    PRISMARINE_SHARD("Prismarinscherbe", Material.PRISMARINE_SHARD, 1, 1, Job.DIVER),
+    PRISMARINE_SHARD("Prismarinscherbe", Material.PRISMARINE_SHARD, 1, 1.0, Job.DIVER),
 
     // nether worker items
-    CRIMSON_FUNGUS("Karmesinpilz", Material.CRIMSON_FUNGUS, 1, 1, Job.NETHER_WORKER),
+    CRIMSON_FUNGUS("Karmesinpilz", Material.CRIMSON_FUNGUS, 1, 1.0, Job.NETHER_WORKER),
 
     ;
 

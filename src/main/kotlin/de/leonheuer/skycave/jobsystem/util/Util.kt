@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 object Util {
 
@@ -20,10 +21,12 @@ object Util {
 
     @Suppress("Deprecation")
     fun openGUI(player: Player, view: GUIView) {
-        val inv = Bukkit.createInventory(player, 45, view.getTitle())
+        val inv = Bukkit.createInventory(player, 54, view.getTitle())
         placeholdersByPattern(inv, 0, "bnnnbnnnb")
+        placeholdersByPattern(inv, 5, "bbbbbbbbb")
 
         val user = main.dataManager.getRegisteredUser(player)
+        val uuid = player.uniqueId
 
         val date = user.jobChangeDate
         if (date == null) {
@@ -73,6 +76,25 @@ object Util {
             .setLore("§7Öffnet einen Ankauf, der je", "§7nach Beruf variiert.")
             .itemStack)
 
+        if (view != GUIView.JOBS) {
+            inv.setItem(48, CustomItem(Material.MAGENTA_GLAZED_TERRACOTTA, 1).setName("§bUmrechnung")
+                .setLore("§7Rechne die Preise der Items", "§7automatisch um. Umrechnen in:",
+                    getCalcAmountLine(uuid, 1),
+                    getCalcAmountLine(uuid, 64),
+                    getCalcAmountLine(uuid, 2304),
+                    "",
+                    "§7Zum Durchschalten klicken"
+                ).itemStack)
+            inv.setItem(50, CustomItem(Material.SUNFLOWER, 1).setName("§bVerkauf")
+                .setLore("§7Lege fest, wie viele Items", "§7auf einmal verkauft werden:",
+                    getSellAmountLine(uuid, 1),
+                    getSellAmountLine(uuid, 64),
+                    getSellAmountLine(uuid, 2304),
+                    "",
+                    "§7Zum Durchschalten klicken"
+                ).itemStack)
+        }
+
         when (view) {
             GUIView.JOBS -> {
                 var slot = 19
@@ -89,6 +111,11 @@ object Util {
                 }
             }
             GUIView.SELL -> {
+                val calc = if (!main.playerManager.calculateAmount.containsKey(uuid)) {
+                    1
+                } else {
+                    main.playerManager.calculateAmount[uuid]!!
+                }
                 var slot = 19
                 GlobalItem.values().forEach {
                     if (slot.mod(9) == 0) {
@@ -97,7 +124,8 @@ object Util {
                         slot += 2
                     }
                     inv.setItem(slot, CustomItem(it.material, it.amount).setName("§6${it.friendlyName}")
-                        .setLore("§7Anzahl: §e${it.amount}", "§7Preis: §e${it.price}$")
+                        .setLore("§8- §7Umrechnung §8-",
+                            "§eAnzahl: §6$calc", "§ePreis: §6${(it.price / it.amount) * calc}$")
                         .addFlag(ItemFlag.HIDE_ATTRIBUTES)
                         .itemStack)
                     slot++
@@ -110,6 +138,11 @@ object Util {
                     return
                 }
 
+                val calc = if (!main.playerManager.calculateAmount.containsKey(uuid)) {
+                    1
+                } else {
+                    main.playerManager.calculateAmount[uuid]!!
+                }
                 var slot = 19
                 JobSpecificItem.values().filter { it.job == user.job }.forEach {
                     if (slot.mod(9) == 0) {
@@ -118,7 +151,8 @@ object Util {
                         slot += 2
                     }
                     inv.setItem(slot, CustomItem(it.material, it.amount).setName("§6${it.friendlyName}")
-                        .setLore("§7Anzahl: §e${it.amount}", "§7Preis: §e${it.price}$")
+                        .setLore("§8- §7Umrechnung §8-",
+                            "§eAnzahl: §6$calc", "§ePreis: §6${(it.price / it.amount) * calc}$")
                         .addFlag(ItemFlag.HIDE_ATTRIBUTES)
                         .itemStack)
                     slot++
@@ -128,6 +162,44 @@ object Util {
         }
 
         player.openInventory(inv)
+    }
+
+    private fun getCalcAmountLine(uuid: UUID, amount: Int): String {
+        val actual = main.playerManager.calculateAmount.getOrDefault(uuid, 1)
+        val prefix = if (actual == amount) {
+            "§a⯈ §2"
+        } else {
+            "§7"
+        }
+        return "$prefix $amount Stück"
+    }
+
+    private fun getSellAmountLine(uuid: UUID, amount: Int): String {
+        val actual = main.playerManager.sellAmount.getOrDefault(uuid, 1)
+        val prefix = if (actual == amount) {
+            "§a⯈ §2"
+        } else {
+            "§7"
+        }
+        return "$prefix $amount Stück"
+    }
+
+    fun setNextCalcAmount(uuid: UUID) {
+        val map = main.playerManager.calculateAmount
+        when (map.getOrDefault(uuid, 1)) {
+            1 -> map[uuid] = 64
+            64 -> map[uuid] = 2304
+            else -> map[uuid] = 1
+        }
+    }
+
+    fun setNextSellAmount(uuid: UUID) {
+        val map = main.playerManager.sellAmount
+        when (map.getOrDefault(uuid, 1)) {
+            1 -> map[uuid] = 64
+            64 -> map[uuid] = 2304
+            else -> map[uuid] = 1
+        }
     }
 
     @Suppress("Deprecation")
@@ -188,15 +260,15 @@ object Util {
         return RequirementResult.NO_MONEY
     }
 
-    fun sellItem(player: Player, item: JobSpecificItem, maxAmount: Int) {
+    fun sellItem(player: Player, item: JobSpecificItem) {
+        val maxAmount = main.playerManager.sellAmount.getOrDefault(player.uniqueId, 1)
         var amount = getItemAmount(player.inventory, item.material)
         if (amount == 0) {
             player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f)
             player.sendMessage(Message.SELL_NOT_ENOUGH.getString().replace("%name", item.friendlyName).get())
             return
         }
-
-        if (maxAmount in 1 until amount) {
+        if (maxAmount < amount) {
             amount = maxAmount
         }
 
@@ -213,15 +285,15 @@ object Util {
                 "for $reward to the admin shop")
     }
 
-    fun sellItem(player: Player, item: GlobalItem, maxAmount: Int) {
+    fun sellItem(player: Player, item: GlobalItem) {
+        val maxAmount = main.playerManager.sellAmount.getOrDefault(player.uniqueId, 1)
         var amount = getItemAmount(player.inventory, item.material)
         if (amount == 0) {
             player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f)
             player.sendMessage(Message.SELL_NOT_ENOUGH.getString().replace("%name", item.friendlyName).get())
             return
         }
-
-        if (maxAmount in 1 until amount) {
+        if (maxAmount < amount) {
             amount = maxAmount
         }
 

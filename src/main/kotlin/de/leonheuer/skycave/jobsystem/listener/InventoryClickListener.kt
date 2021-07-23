@@ -24,17 +24,11 @@ class InventoryClickListener(private val main: JobSystem): Listener {
         if (item == null || item.type.isAir) {
             return
         }
-
-        val title = player.openInventory.title
-        if (title != GUIView.JOBS.getTitle() &&
-            title != GUIView.SELL_PERSONAL.getTitle() &&
-            title != GUIView.SELL.getTitle()
-        ) {
-            return
-        }
+        val view = GUIView.fromString(player.openInventory.title) ?: return
 
         event.isCancelled = true
 
+        // control items
         when (item.itemMeta.displayName) {
             "§6Berufe" -> {
                 player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
@@ -51,8 +45,21 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                 Util.openGUI(player, GUIView.SELL_PERSONAL)
                 return
             }
+            "§bUmrechnung" -> {
+                player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
+                Util.setNextCalcAmount(player.uniqueId)
+                Util.openGUI(player, view)
+                return
+            }
+            "§bVerkauf" -> {
+                player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
+                Util.setNextSellAmount(player.uniqueId)
+                Util.openGUI(player, view)
+                return
+            }
         }
 
+        // inner items
         when (player.openInventory.title) {
             GUIView.JOBS.getTitle() -> {
                 val job = Job.fromItemStack(item) ?: return
@@ -93,7 +100,7 @@ class InventoryClickListener(private val main: JobSystem): Listener {
             }
             GUIView.SELL.getTitle() -> {
                 val sellItem = GlobalItem.fromItemStack(item) ?: return
-                Util.sellItem(player, sellItem, -1)
+                Util.sellItem(player, sellItem)
             }
             GUIView.SELL_PERSONAL.getTitle() -> {
                 val user = main.dataManager.getRegisteredUser(player)
@@ -103,7 +110,7 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                     return
                 }
                 val sellItem = JobSpecificItem.fromItemStack(item, job) ?: return
-                Util.sellItem(player, sellItem, -1)
+                Util.sellItem(player, sellItem)
             }
             GUIView.CONFIRM.getTitle() -> {
                 val job = Util.extractJobFromItemMeta(item)
