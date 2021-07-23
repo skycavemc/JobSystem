@@ -1,6 +1,8 @@
 package de.leonheuer.skycave.jobsystem
 
+import de.leonheuer.skycave.jobsystem.command.GSellCommand
 import de.leonheuer.skycave.jobsystem.command.JobCommand
+import de.leonheuer.skycave.jobsystem.command.SellCommand
 import de.leonheuer.skycave.jobsystem.listener.InventoryClickListener
 import de.leonheuer.skycave.jobsystem.listener.PlayerInteractListener
 import de.leonheuer.skycave.jobsystem.listener.PlayerJoinListener
@@ -34,6 +36,8 @@ class JobSystem: JavaPlugin() {
         pm.registerEvents(InventoryClickListener(this), this)
 
         getCommand("job")!!.setExecutor(JobCommand(this))
+        getCommand("sell")!!.setExecutor(SellCommand())
+        getCommand("gsell")!!.setExecutor(GSellCommand())
     }
 
     override fun onDisable() {
