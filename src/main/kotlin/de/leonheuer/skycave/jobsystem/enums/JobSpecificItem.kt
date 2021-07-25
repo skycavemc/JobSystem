@@ -48,10 +48,11 @@ enum class JobSpecificItem(
     CHORUS_FRUIT("Chorusfrucht", Material.CHORUS_FRUIT, 64, 32.0, Job.FARMER),
 
     // miner items
+    COAL("Kohle", Material.COAL, 64, 8.0, Job.MINER),
     IRON_ORE("Eisenerz", Material.IRON_ORE, 1, 2.2, Job.MINER),
     GOLD_ORE("Golderz", Material.GOLD_ORE, 1, 7.0, Job.MINER),
     LAPIS_LAZULI("Lapis", Material.LAPIS_LAZULI, 64, 200.0, Job.MINER),
-    COAL("Kohle", Material.COAL, 64, 8.0, Job.MINER),
+    REDSTONE("Redstone", Material.REDSTONE, 1, 6.0, Job.MINER),
     DIAMOND("Diamant", Material.DIAMOND, 1, 55.0, Job.MINER),
     COBBLESTONE("Bruchstein", Material.COBBLESTONE, 2304, 200.0, Job.MINER),
 

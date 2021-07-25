@@ -108,7 +108,7 @@ object Util {
                     }
                     inv.setItem(slot, CustomItem(it.icon, 1)
                         .setName("§b${it.friendlyName}").setLore("§7Klicke für Berufswechsel", "",
-                            "§aAnkauf-Items:", "§e§o${it.sellContent}"
+                            "§aItems für den persönlichen Ankauf:", "§e§o${it.sellContent}"
                         ).addFlag(ItemFlag.HIDE_ATTRIBUTES).itemStack)
                     slot++
                 }
@@ -119,14 +119,8 @@ object Util {
                 } else {
                     main.playerManager.calculateAmount[uuid]!!
                 }
-                var slot = 19
+                var slot = 18
                 GlobalItem.values().forEach {
-                    // margin
-                    if (slot.mod(9) == 0) {
-                        slot ++
-                    } else if ((slot + 1).mod(9) == 0) {
-                        slot += 2
-                    }
                     val price = DecimalFormat("#.###").format((it.price / it.amount) * calc)
                     inv.setItem(slot, CustomItem(it.material, 1).setName("§6${it.friendlyName}")
                         .setLore("§8- §7Umrechnung §8-",
@@ -150,11 +144,6 @@ object Util {
                 }
                 var slot = 18
                 JobSpecificItem.values().filter { it.job == user.job }.forEach {
-                    /*if (slot.mod(9) == 0) {
-                        slot ++
-                    } else if ((slot + 1).mod(9) == 0) {
-                        slot += 2
-                    }*/
                     val price = DecimalFormat("#.##").format((it.price / it.amount) * calc)
                     inv.setItem(slot, CustomItem(it.material, 1).setName("§6${it.friendlyName}")
                         .setLore("§8- §7Umrechnung §8-",
