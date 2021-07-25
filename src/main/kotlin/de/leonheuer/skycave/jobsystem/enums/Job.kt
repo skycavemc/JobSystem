@@ -5,12 +5,13 @@ import org.bukkit.inventory.ItemStack
 
 enum class Job(val friendlyName: String, val icon: Material, val description: String) {
 
-    FORESTER("Förster", Material.OAK_LOG, ""),
-    MINER("Minenarbeiter", Material.DIAMOND_PICKAXE, ""),
+    FORESTER("Förster", Material.GOLDEN_AXE, ""),
     FARMER("Landwirt", Material.WHEAT, ""),
-    BOTANIST("Botaniker", Material.POPPY, ""),
-    DIVER("Taucher", Material.TROPICAL_FISH, ""),
-    NETHER_WORKER("Höllenarbeiter", Material.NETHER_BRICKS, ""),
+    MINER("Minenarbeiter", Material.DIAMOND_PICKAXE, ""),
+    //ALCHEMIST("Alchemist", Material.BREWING_STAND, ""),
+    NETHER_WORKER("Höllenarbeiter", Material.BLAZE_POWDER, ""),
+    COOK("Koch", Material.COOKED_BEEF, ""),
+    HUNTER("Jäger", Material.BOW, ""),
     ;
 
     companion object {
