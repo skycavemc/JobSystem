@@ -100,14 +100,16 @@ object Util {
             GUIView.JOBS -> {
                 var slot = 19
                 Job.values().forEach {
+                    // margin
                     if (slot.mod(9) == 0) {
                         slot ++
                     } else if ((slot + 1).mod(9) == 0) {
                         slot += 2
                     }
                     inv.setItem(slot, CustomItem(it.icon, 1)
-                        .setName("§b${it.friendlyName}").setLore("§7Klicke für Berufswechsel")
-                        .addFlag(ItemFlag.HIDE_ATTRIBUTES).itemStack)
+                        .setName("§b${it.friendlyName}").setLore("§7Klicke für Berufswechsel", "",
+                            "§aAnkauf-Items:", "§e§o${it.sellContent}"
+                        ).addFlag(ItemFlag.HIDE_ATTRIBUTES).itemStack)
                     slot++
                 }
             }
@@ -119,6 +121,7 @@ object Util {
                 }
                 var slot = 19
                 GlobalItem.values().forEach {
+                    // margin
                     if (slot.mod(9) == 0) {
                         slot ++
                     } else if ((slot + 1).mod(9) == 0) {
@@ -145,7 +148,7 @@ object Util {
                 } else {
                     main.playerManager.calculateAmount[uuid]!!
                 }
-                var slot = 9
+                var slot = 18
                 JobSpecificItem.values().filter { it.job == user.job }.forEach {
                     /*if (slot.mod(9) == 0) {
                         slot ++

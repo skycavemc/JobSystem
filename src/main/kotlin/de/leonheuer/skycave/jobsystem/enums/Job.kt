@@ -3,15 +3,19 @@ package de.leonheuer.skycave.jobsystem.enums
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-enum class Job(val friendlyName: String, val icon: Material, val description: String) {
+enum class Job(
+    val friendlyName: String,
+    val icon: Material,
+    val sellContent: String
+    ) {
 
-    FORESTER("Förster", Material.GOLDEN_AXE, ""),
-    FARMER("Landwirt", Material.WHEAT, ""),
-    MINER("Minenarbeiter", Material.DIAMOND_PICKAXE, ""),
+    FORESTER("Förster", Material.GOLDEN_AXE, "Stämme, Setzlinge, Laub"),
+    FARMER("Landwirt", Material.WHEAT, "Wachsende Items, zbsp. Weizen"),
+    MINER("Minenarbeiter", Material.DIAMOND_PICKAXE, "Erze und Bruchstein"),
     //ALCHEMIST("Alchemist", Material.BREWING_STAND, ""),
-    NETHER_WORKER("Höllenarbeiter", Material.BLAZE_POWDER, ""),
-    COOK("Koch", Material.COOKED_BEEF, ""),
-    HUNTER("Jäger", Material.BOW, ""),
+    NETHER_WORKER("Höllenarbeiter", Material.BLAZE_POWDER, "Netheritems und -blöcke"),
+    COOK("Koch", Material.COOKED_BEEF, "Essbares, zbsp. gebratenes Fleisch"),
+    HUNTER("Jäger", Material.BOW, "Mobdrops, zbsp. Knochen"),
     ;
 
     companion object {

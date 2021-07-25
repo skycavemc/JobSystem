@@ -45,6 +45,9 @@ class JobCommand(private val main: JobSystem): CommandExecutor, TabCompleter {
                     sender.sendMessage(Message.JOB_ADMIN_HELP_CANCEL.getString().get(prefix = false))
                     sender.sendMessage(Message.JOB_ADMIN_HELP_HELP.getString().get(prefix = false))
                 }
+                "resettimer" -> {
+                    main.dataManager.getRegisteredUser(sender).jobChangeDate = null
+                }
                 else -> {
                     sender.sendMessage(Message.UNKNOWN_COMMAND.getString().get())
                 }

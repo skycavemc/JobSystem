@@ -27,6 +27,14 @@ class CustomItem(material: Material, amount: Int) {
         return this
     }
 
+    @Suppress("Deprecation")
+    fun setLore(lore: List<String>): CustomItem {
+        val meta = itemStack.itemMeta
+        meta.lore = lore
+        itemStack.itemMeta = meta
+        return this
+    }
+
     fun addFlag(flag: ItemFlag): CustomItem {
         itemStack.addItemFlags(flag)
         return this

@@ -63,7 +63,7 @@ enum class JobSpecificItem(
     GHAST_TEAR("Ghastträne", Material.GHAST_TEAR, 1, 150.0, Job.NETHER_WORKER),
     NETHER_BRICKS("Netherziegel", Material.NETHER_BRICKS, 64, 10.0, Job.NETHER_WORKER),
     RED_NETHER_BRICKS("Rote Netherziegel", Material.RED_NETHER_BRICKS, 64, 10.0, Job.NETHER_WORKER),
-    QUARZ("Quarz", Material.QUARTZ, 1, 4.0, Job.NETHER_WORKER),
+    QUARTZ("Quarz", Material.QUARTZ, 1, 4.0, Job.NETHER_WORKER),
     CRIMSON_STEM("Karmesinstiel", Material.CRIMSON_STEM, 1, 6.0, Job.NETHER_WORKER),
     WARPED_STEM("Wirrstiel", Material.WARPED_STEM, 1, 6.0, Job.NETHER_WORKER),
     CRIMSON_FUNGUS("Karmesinpilz", Material.CRIMSON_FUNGUS, 1, 5.0, Job.NETHER_WORKER),
