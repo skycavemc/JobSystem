@@ -39,7 +39,7 @@ enum class JobSpecificItem(
     POISONOUS_POTATO("Giftige Kartoffel", Material.POISONOUS_POTATO, 1, 2.0, Job.FARMER),
     CARROT("Karotte", Material.CARROT, 64, 40.0, Job.FARMER),
     SUGAR_CANE("Zuckerrohr", Material.SUGAR_CANE, 64, 10.0, Job.FARMER),
-    CACTUS("Kaktus", Material.SUGAR_CANE, 64, 3.0, Job.FARMER),
+    CACTUS("Kaktus", Material.CACTUS, 64, 3.0, Job.FARMER),
     PUMPKIN("Kürbis", Material.SUGAR_CANE, 64, 5.0, Job.FARMER),
     MELON("Melone", Material.MELON, 64, 7.0, Job.FARMER),
     APPLE("Apfel", Material.SUGAR_CANE, 64, 3.0, Job.FARMER),
