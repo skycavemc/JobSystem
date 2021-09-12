@@ -29,6 +29,7 @@ enum class Message(private val message: String) {
     JOB_CHANGE_PAY("&eDu hast deinen Job für 100.000$ gewechselt."),
     JOB_CHANGE_NO_MONEY("&cDu hast nicht genug Geld um deinen Beruf zu wechseln."),
     JOB_CHANGE_ABORT("&cKostenpflichtiger Wechsel des Jobs abgebrochen."),
+    JOB_CHANGE_ALREADY("&cDu übst bereits den Job %job aus."),
 
     // sell item messages
     SELL_NOT_ENOUGH("&cDu hast nicht genug %name."),

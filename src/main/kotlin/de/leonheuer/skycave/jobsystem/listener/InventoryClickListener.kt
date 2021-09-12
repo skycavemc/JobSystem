@@ -65,14 +65,16 @@ class InventoryClickListener(private val main: JobSystem): Listener {
             GUIView.JOBS.getTitle() -> {
                 val job = Job.fromItemStack(item) ?: return
                 val user = main.dataManager.getRegisteredUser(player)
-                val date = user.jobChangeDate
+                val result = Util.getRequirementResult(player, user)
 
-                if (date == null) {
-                    user.job = job
-                    user.jobChangeDate = LocalDateTime.now()
-                    CustomSound.SUCCESS.playTo(player)
-                    player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString().replace("%job", job.friendlyName).get())
-                    Util.openGUI(player, GUIView.JOBS)
+                if (result == RequirementResult.FIRST) {
+                    Util.openConfirmGUI(player, job, result)
+                    return
+                }
+
+                if (job == user.job) {
+                    CustomSound.ERROR.playTo(player)
+                    player.sendMessage(Message.JOB_CHANGE_ALREADY.getString().replaceAll("%job", job.name).get())
                     return
                 }
 
@@ -82,22 +84,13 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                     return
                 }
 
-                when (Util.getRequirementResult(player, user)) {
-                    RequirementResult.USE_FREE -> {
-                        user.job = job
-                        user.jobChangeDate = LocalDateTime.now()
-                        user.freeJobChanges -= 1
-                        CustomSound.SUCCESS.playTo(player)
-                        player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
-                            .replace("%job", job.friendlyName).get())
-                        player.sendMessage(Message.JOB_CHANGE_USE_FREE.getString()
-                            .replace("%amount", user.freeJobChanges.toString()).get())
-                        Util.openGUI(player, GUIView.JOBS)
-                    }
-                    RequirementResult.PAY -> Util.openConfirmGUI(player, job)
+                when (result) {
                     RequirementResult.NO_MONEY -> {
                         CustomSound.ERROR.playTo(player)
                         player.sendMessage(Message.JOB_CHANGE_NO_MONEY.getString().get())
+                    }
+                    else -> {
+                        Util.openConfirmGUI(player, job, result)
                     }
                 }
             }
@@ -122,18 +115,45 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                 }
                 if (item.type == Material.LIME_CONCRETE) {
                     val job = Util.extractJobFromItemMeta(item)
-                    val user = main.dataManager.getRegisteredUser(player)
-                    if (job == null) {
+                    val result = Util.extractResultFromItemMeta(item)
+                    if (job == null || result == null) {
                         player.sendMessage(Message.INTERNAL_ERROR.getString().get())
                         return
                     }
-                    user.job = job
-                    user.jobChangeDate = LocalDateTime.now()
-                    main.economy.withdrawPlayer(player, 100000.0)
-                    CustomSound.SUCCESS.playTo(player)
-                    player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
-                        .replace("%job", job.friendlyName).get())
-                    player.sendMessage(Message.JOB_CHANGE_PAY.getString().get())
+                    val user = main.dataManager.getRegisteredUser(player)
+
+                    when (result) {
+                        RequirementResult.PAY -> {
+                            user.job = job
+                            user.jobChangeDate = LocalDateTime.now()
+                            main.economy.withdrawPlayer(player, 100000.0)
+                            CustomSound.SUCCESS.playTo(player)
+                            player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
+                                .replace("%job", job.friendlyName).get())
+                            player.sendMessage(Message.JOB_CHANGE_PAY.getString().get())
+                        }
+                        RequirementResult.FIRST -> {
+                            user.job = job
+                            user.jobChangeDate = LocalDateTime.now()
+                            CustomSound.SUCCESS.playTo(player)
+                            player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString().replace("%job", job.friendlyName).get())
+                            Util.openGUI(player, GUIView.JOBS)
+                        }
+                        RequirementResult.USE_FREE -> {
+                            user.job = job
+                            user.jobChangeDate = LocalDateTime.now()
+                            user.freeJobChanges -= 1
+                            CustomSound.SUCCESS.playTo(player)
+                            player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
+                                .replace("%job", job.friendlyName).get())
+                            player.sendMessage(Message.JOB_CHANGE_USE_FREE.getString()
+                                .replace("%amount", user.freeJobChanges.toString()).get())
+                            Util.openGUI(player, GUIView.JOBS)
+                        }
+                        else -> {
+                            // ignored
+                        }
+                    }
                 }
                 Util.openGUI(player, GUIView.JOBS)
             }

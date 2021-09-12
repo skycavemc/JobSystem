@@ -1,9 +1,10 @@
 package de.leonheuer.skycave.jobsystem.enums
 
-enum class RequirementResult {
+enum class RequirementResult(val title: String) {
 
-    USE_FREE,
-    PAY,
-    NO_MONEY
+    FIRST("Erster Job"),
+    USE_FREE("Kostenloser Jobwechsel"),
+    PAY("Zahle 100.000$"),
+    NO_MONEY(""),
 
 }

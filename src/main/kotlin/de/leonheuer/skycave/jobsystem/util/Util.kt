@@ -121,7 +121,7 @@ object Util {
                 }
                 var slot = 18
                 GlobalItem.values().forEach {
-                    val price = DecimalFormat("#.###").format((it.price / it.amount) * calc)
+                    val price = DecimalFormat("#.##").format((it.price / it.amount) * calc)
                     inv.setItem(slot, CustomItem(it.material, 1).setName("§6${it.friendlyName}")
                         .setLore("§8- §7Umrechnung §8-",
                             "§eAnzahl: §6$calc", "§ePreis: §6$price$")
@@ -198,7 +198,7 @@ object Util {
     }
 
     @Suppress("Deprecation")
-    fun openConfirmGUI(player: Player, job: Job) {
+    fun openConfirmGUI(player: Player, job: Job, result: RequirementResult) {
         val inv = Bukkit.createInventory(player, 27, GUIView.CONFIRM.getTitle())
         placeholdersByPattern(inv, 0,
             "ngggnrrrn",
@@ -206,19 +206,25 @@ object Util {
             "ngggnrrrn"
         )
         inv.setItem(11, CustomItem(Material.LIME_CONCRETE, 1)
-            .setName("§aBestätige").setLore("§7Du zahlst 100.000$.", "§7Dein Job wird zu ${job.friendlyName} geändert.")
+            .setName("§aBestätige").setLore("§7${result.title}", "§7Dein Job wird zu ${job.friendlyName} geändert.")
             .itemStack)
         inv.setItem(15, CustomItem(Material.RED_CONCRETE, 1)
-            .setName("§cLehne ab").setLore("§7Du zahlst kein Geld.", "§7Dein Job wird nicht geändert.")
+            .setName("§cLehne ab").setLore("§7Dein Job wird nicht geändert.")
             .itemStack)
         player.openInventory(inv)
+    }
+
+    @Suppress("Deprecation")
+    fun extractResultFromItemMeta(item: ItemStack) : RequirementResult? {
+        val lore = item.itemMeta.lore ?: return null
+        val result = lore[0].substring(2)
+        return RequirementResult.values().firstOrNull { it.title == result }
     }
 
     @Suppress("Deprecation")
     fun extractJobFromItemMeta(item: ItemStack): Job? {
         val lore = item.itemMeta.lore ?: return null
         val jobName = lore[1].split(" ")[4]
-        println(jobName)
         return Job.values().firstOrNull { it.friendlyName == jobName }
     }
 
@@ -256,6 +262,9 @@ object Util {
     }
 
     fun getRequirementResult(player: Player, user: User): RequirementResult {
+        if (user.jobChangeDate == null) {
+            return RequirementResult.FIRST
+        }
         if (user.freeJobChanges > 0) {
             return RequirementResult.USE_FREE
         }
@@ -278,11 +287,12 @@ object Util {
         }
 
         val reward = item.price * (amount.toDouble() / item.amount)
+        val formatter = DecimalFormat("#.##")
         CustomSound.SUCCESS.playTo(player)
         player.sendMessage(Message.SELL_SOLD.getString()
             .replace("%amount", amount.toString())
             .replace("%name", item.friendlyName)
-            .replace("%reward", reward.toString())
+            .replace("%reward", formatter.format(reward))
             .get())
         player.inventory.removeItem(ItemStack(item.material, amount))
         main.economy.depositPlayer(player, reward)
@@ -303,11 +313,12 @@ object Util {
         }
 
         val reward = item.price * (amount.toDouble() / item.amount)
+        val formatter = DecimalFormat("#.##")
         CustomSound.SUCCESS.playTo(player)
         player.sendMessage(Message.SELL_SOLD.getString()
             .replace("%amount", amount.toString())
             .replace("%name", item.friendlyName)
-            .replace("%reward", reward.toString())
+            .replace("%reward", formatter.format(reward))
             .get())
         player.inventory.removeItem(ItemStack(item.material, amount))
         main.economy.depositPlayer(player, reward)
