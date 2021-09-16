@@ -74,7 +74,7 @@ class InventoryClickListener(private val main: JobSystem): Listener {
 
                 if (job == user.job) {
                     CustomSound.ERROR.playTo(player)
-                    player.sendMessage(Message.JOB_CHANGE_ALREADY.getString().replaceAll("%job", job.name).get())
+                    player.sendMessage(Message.JOB_CHANGE_ALREADY.getString().replaceAll("%job", job.friendlyName).get())
                     return
                 }
 
