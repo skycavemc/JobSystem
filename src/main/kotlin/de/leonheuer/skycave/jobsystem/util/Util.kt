@@ -277,7 +277,7 @@ object Util {
     fun sellItem(player: Player, item: JobSpecificItem) {
         val maxAmount = main.playerManager.sellAmount.getOrDefault(player.uniqueId, 1)
         var amount = getItemAmount(player.inventory, item.material)
-        if (amount == 0 || !player.inventory.contains(ItemStack(item.material, amount))) {
+        if (amount == 0 || !player.inventory.containsAtLeast(ItemStack(item.material, 1), 1)) {
             CustomSound.ERROR.playTo(player)
             player.sendMessage(Message.SELL_NOT_ENOUGH.getString().replace("%name", item.friendlyName).get())
             return
@@ -303,7 +303,7 @@ object Util {
     fun sellItem(player: Player, item: GlobalItem) {
         val maxAmount = main.playerManager.sellAmount.getOrDefault(player.uniqueId, 1)
         var amount = getItemAmount(player.inventory, item.material)
-        if (amount == 0 || !player.inventory.contains(ItemStack(item.material, amount))) {
+        if (amount == 0 || !player.inventory.containsAtLeast(ItemStack(item.material, 1), 1)) {
             CustomSound.ERROR.playTo(player)
             player.sendMessage(Message.SELL_NOT_ENOUGH.getString().replace("%name", item.friendlyName).get())
             return
