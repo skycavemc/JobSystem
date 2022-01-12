@@ -216,14 +216,14 @@ object Util {
 
     @Suppress("Deprecation")
     fun extractResultFromItemMeta(item: ItemStack) : RequirementResult? {
-        val lore = item.itemMeta.lore ?: return null
+        val lore = item.itemMeta!!.lore ?: return null
         val result = lore[0].substring(2)
         return RequirementResult.values().firstOrNull { it.title == result }
     }
 
     @Suppress("Deprecation")
     fun extractJobFromItemMeta(item: ItemStack): Job? {
-        val lore = item.itemMeta.lore ?: return null
+        val lore = item.itemMeta!!.lore ?: return null
         val jobName = lore[1].split(" ")[4]
         return Job.values().firstOrNull { it.friendlyName == jobName }
     }
@@ -277,7 +277,7 @@ object Util {
     fun sellItem(player: Player, item: JobSpecificItem) {
         val maxAmount = main.playerManager.sellAmount.getOrDefault(player.uniqueId, 1)
         var amount = getItemAmount(player.inventory, item.material)
-        if (amount == 0) {
+        if (amount == 0 || !player.inventory.contains(ItemStack(item.material, amount))) {
             CustomSound.ERROR.playTo(player)
             player.sendMessage(Message.SELL_NOT_ENOUGH.getString().replace("%name", item.friendlyName).get())
             return
@@ -303,7 +303,7 @@ object Util {
     fun sellItem(player: Player, item: GlobalItem) {
         val maxAmount = main.playerManager.sellAmount.getOrDefault(player.uniqueId, 1)
         var amount = getItemAmount(player.inventory, item.material)
-        if (amount == 0) {
+        if (amount == 0 || !player.inventory.contains(ItemStack(item.material, amount))) {
             CustomSound.ERROR.playTo(player)
             player.sendMessage(Message.SELL_NOT_ENOUGH.getString().replace("%name", item.friendlyName).get())
             return

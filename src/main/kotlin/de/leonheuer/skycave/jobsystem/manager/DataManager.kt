@@ -111,7 +111,7 @@ class DataManager(main: JobSystem) {
 
             val obj = JSONObject()
             val location = JSONObject()
-            location["world"] = npc!!.location.world.uid.toString()
+            location["world"] = npc!!.location.world!!.uid.toString()
             location["x"] = npc!!.location.x
             location["y"] = npc!!.location.y
             location["z"] = npc!!.location.z

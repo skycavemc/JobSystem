@@ -9,14 +9,23 @@ version = "1.1.0"
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
     maven { url = uri("https://jitpack.io") }
+    maven {
+        url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+        content {
+            includeGroup("org.bukkit")
+            includeGroup("org.spigotmc")
+        }
+    }
+    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+    maven { url = uri("https://oss.sonatype.org/content/repositories/central") }
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
-    compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.6.0")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
+    compileOnly("org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.0")
 }
 
 tasks {
@@ -25,6 +34,14 @@ tasks {
     }
 
     withType<KotlinCompile>() {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "11"
     }
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "11"
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "11"
 }

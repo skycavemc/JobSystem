@@ -23,7 +23,7 @@ enum class GlobalItem (
     companion object {
         @Suppress("Deprecation")
         fun fromItemStack(itemStack: ItemStack): GlobalItem? {
-            return values().firstOrNull { itemStack.itemMeta.displayName.endsWith(it.friendlyName) &&
+            return values().firstOrNull { itemStack.itemMeta!!.displayName.endsWith(it.friendlyName) &&
                     itemStack.type == it.material }
         }
     }

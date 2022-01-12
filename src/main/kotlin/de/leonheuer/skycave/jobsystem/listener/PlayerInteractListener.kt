@@ -17,7 +17,7 @@ class PlayerInteractListener(private val main: JobSystem): Listener {
     fun onPlayerInteract(event: PlayerInteractAtEntityEvent) {
         val player = event.player
         val entity = event.rightClicked
-        val location = entity.location.toBlockLocation()
+        val location = entity.location.block.location
         val list = main.playerManager.npcSetMode
 
         if (list.contains(player.uniqueId)) {

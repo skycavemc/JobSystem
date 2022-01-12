@@ -21,7 +21,7 @@ enum class Job(
     companion object {
         @Suppress("Deprecation")
         fun fromItemStack(item: ItemStack): Job? {
-            return values().firstOrNull { item.itemMeta.displayName.endsWith(it.friendlyName) && item.type == it.icon }
+            return values().firstOrNull { item.itemMeta!!.displayName.endsWith(it.friendlyName) && item.type == it.icon }
         }
     }
 

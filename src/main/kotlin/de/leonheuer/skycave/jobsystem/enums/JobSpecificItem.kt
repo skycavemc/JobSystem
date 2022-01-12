@@ -108,7 +108,7 @@ enum class JobSpecificItem(
     companion object {
         @Suppress("Deprecation")
         fun fromItemStack(itemStack: ItemStack, job: Job): JobSpecificItem? {
-            return values().firstOrNull { itemStack.itemMeta.displayName.endsWith(it.friendlyName) &&
+            return values().firstOrNull { itemStack.itemMeta!!.displayName.endsWith(it.friendlyName) &&
                     itemStack.type == it.material && job == it.job }
         }
     }

@@ -30,7 +30,7 @@ class InventoryClickListener(private val main: JobSystem): Listener {
         event.isCancelled = true
 
         // control items
-        when (item.itemMeta.displayName) {
+        when (item.itemMeta!!.displayName) {
             "§6Berufe" -> {
                 CustomSound.CLICK.playTo(player)
                 Util.openGUI(player, GUIView.JOBS)
