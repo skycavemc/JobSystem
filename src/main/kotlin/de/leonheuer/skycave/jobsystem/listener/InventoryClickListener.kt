@@ -110,8 +110,12 @@ class InventoryClickListener(private val main: JobSystem): Listener {
             }
             GUIView.CONFIRM.getTitle() -> {
                 if (item.type == Material.RED_CONCRETE) {
+                    if (main.dataManager.getRegisteredUser(player).freeJobChanges == 0) {
+                        player.sendMessage(Message.JOB_CHANGE_ABORT.getString().get())
+                    } else {
+                        player.sendMessage(Message.JOB_CHANGE_ABORT_FREE.getString().get())
+                    }
                     CustomSound.ERROR.playTo(player)
-                    player.sendMessage(Message.JOB_CHANGE_ABORT.getString().get())
                 }
                 if (item.type == Material.LIME_CONCRETE) {
                     val job = Util.extractJobFromItemMeta(item)
