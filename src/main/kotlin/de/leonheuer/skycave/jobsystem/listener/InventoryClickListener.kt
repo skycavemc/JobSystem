@@ -4,7 +4,6 @@ import de.leonheuer.skycave.jobsystem.JobSystem
 import de.leonheuer.skycave.jobsystem.enums.*
 import de.leonheuer.skycave.jobsystem.util.Util
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -130,11 +129,14 @@ class InventoryClickListener(private val main: JobSystem): Listener {
                         RequirementResult.PAY -> {
                             user.job = job
                             user.jobChangeDate = LocalDateTime.now()
-                            main.economy.withdrawPlayer(player, 100000.0)
-                            CustomSound.SUCCESS.playTo(player)
-                            player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
-                                .replace("%job", job.friendlyName).get())
-                            player.sendMessage(Message.JOB_CHANGE_PAY.getString().get())
+                            if (main.economy.withdrawPlayer(player, 20000.0).transactionSuccess()) {
+                                CustomSound.SUCCESS.playTo(player)
+                                player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
+                                    .replace("%job", job.friendlyName).get())
+                                player.sendMessage(Message.JOB_CHANGE_PAY.getString().get())
+                            } else {
+                                CustomSound.ERROR.playTo(player)
+                            }
                         }
                         RequirementResult.FIRST -> {
                             user.job = job
