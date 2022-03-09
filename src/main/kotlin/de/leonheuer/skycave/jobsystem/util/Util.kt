@@ -274,6 +274,7 @@ object Util {
         val pattern = GUIPattern.ofPattern("_GGG_RRR_")
             .withMaterial('G', ItemBuilder.of(Material.LIME_STAINED_GLASS_PANE).name("§0").asItem())
             .withMaterial('R', ItemBuilder.of(Material.RED_STAINED_GLASS_PANE).name("§0").asItem())
+            .withMaterial('_', null)
         main.guiFactory.createGUI(3, GUIView.CONFIRM.getTitle())
             .formatPattern(pattern.startAtLine(1))
             .formatPattern(pattern.startAtLine(2))
@@ -283,17 +284,6 @@ object Util {
                 .description(
                     "§7${result.title}", "§7Dein Job wird zu ${job.friendlyName} geändert."
                 ).asItem()
-            ) {
-                if (user.freeJobChanges == 0) {
-                    player.sendMessage(Message.JOB_CHANGE_ABORT.getString().get())
-                } else {
-                    player.sendMessage(Message.JOB_CHANGE_ABORT_FREE.getString().get())
-                }
-                CustomSound.ERROR.playTo(player)
-            }.setItem(15, ItemBuilder.of(Material.RED_CONCRETE)
-                .name("§cLehne ab")
-                .description("§7Dein Job wird nicht geändert.")
-                .asItem()
             ) {
                 when (result) {
                     RequirementResult.PAY -> {
@@ -328,6 +318,17 @@ object Util {
                     }
                     else -> {}
                 }
+            }.setItem(15, ItemBuilder.of(Material.RED_CONCRETE)
+                .name("§cLehne ab")
+                .description("§7Dein Job wird nicht geändert.")
+                .asItem()
+            ) {
+                if (user.freeJobChanges == 0) {
+                    player.sendMessage(Message.JOB_CHANGE_ABORT.getString().get())
+                } else {
+                    player.sendMessage(Message.JOB_CHANGE_ABORT_FREE.getString().get())
+                }
+                CustomSound.ERROR.playTo(player)
             }.show(player)
     }
 

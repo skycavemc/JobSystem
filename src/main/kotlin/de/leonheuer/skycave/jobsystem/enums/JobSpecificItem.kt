@@ -54,7 +54,7 @@ enum class JobSpecificItem(
     RED_MUSHROOM("Roter Pilz", Material.RED_MUSHROOM, 64, 64.0, Job.FARMER),
 
     // miner items
-    COAL("Kohle", Material.COAL, 64, 8.0, Job.MINER),
+    COAL("Kohle", Material.COAL, 64, 10.0, Job.MINER),
     RAW_IRON("Rohes Eisen", Material.RAW_IRON, 1, 2.3, Job.MINER),
     RAW_GOLD("Rohes Gold", Material.RAW_GOLD, 1, 7.0, Job.MINER),
     LAPIS_LAZULI("Lapis", Material.LAPIS_LAZULI, 64, 200.0, Job.MINER),
@@ -98,7 +98,7 @@ enum class JobSpecificItem(
     COOKED_COD("Gebratener Kabeljau", Material.COOKED_COD, 1, 4.0, Job.COOK),
     TROPICAL_FISH("Tropenfisch", Material.TROPICAL_FISH, 1, 4.0, Job.COOK),
     CAKE("Kuchen", Material.CAKE, 1, 15.0, Job.COOK),
-    PUMPKIN_PIE("Kürbiskuchen", Material.PUMPKIN_PIE, 64, 16.0, Job.COOK),
+    PUMPKIN_PIE("Kürbiskuchen", Material.PUMPKIN_PIE, 1, 3.0, Job.COOK),
     MUSHROOM_STEW("Pilzsuppe", Material.MUSHROOM_STEW, 1, 6.0, Job.COOK),
     RABBIT_STEW("Kaninchenragout", Material.RABBIT_STEW, 1, 9.0, Job.COOK),
     BEETROOT_SOUP("Rote Beete Suppe", Material.BEETROOT_SOUP, 1, 5.0, Job.COOK),
