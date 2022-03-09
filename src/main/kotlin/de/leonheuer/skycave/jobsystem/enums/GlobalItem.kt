@@ -1,7 +1,6 @@
 package de.leonheuer.skycave.jobsystem.enums
 
 import org.bukkit.Material
-import org.bukkit.inventory.ItemStack
 
 enum class GlobalItem (
     val friendlyName: String,
@@ -18,14 +17,5 @@ enum class GlobalItem (
     DIAMOND("Diamant", Material.DIAMOND, 1, 50.0),
     COBBLESTONE("Bruchstein", Material.COBBLESTONE, 2304, 100.0),
     ;
-
-
-    companion object {
-        @Suppress("Deprecation")
-        fun fromItemStack(itemStack: ItemStack): GlobalItem? {
-            return values().firstOrNull { itemStack.itemMeta!!.displayName.endsWith(it.friendlyName) &&
-                    itemStack.type == it.material }
-        }
-    }
 
 }

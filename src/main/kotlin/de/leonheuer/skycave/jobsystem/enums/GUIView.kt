@@ -14,10 +14,4 @@ enum class GUIView(private val title: String) {
         return ChatColor.translateAlternateColorCodes('&', title)
     }
 
-    companion object {
-        fun fromString(title: String): GUIView? {
-            return values().firstOrNull { title == it.getTitle() }
-        }
-    }
-
 }

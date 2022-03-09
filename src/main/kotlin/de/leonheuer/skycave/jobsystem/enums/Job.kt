@@ -1,7 +1,6 @@
 package de.leonheuer.skycave.jobsystem.enums
 
 import org.bukkit.Material
-import org.bukkit.inventory.ItemStack
 
 enum class Job(
     val friendlyName: String,
@@ -17,12 +16,5 @@ enum class Job(
     COOK("Koch", Material.COOKED_BEEF, "Essbares, zbsp. gebratenes Fleisch"),
     HUNTER("Jäger", Material.BOW, "Mobdrops, zbsp. Knochen"),
     ;
-
-    companion object {
-        @Suppress("Deprecation")
-        fun fromItemStack(item: ItemStack): Job? {
-            return values().firstOrNull { item.itemMeta!!.displayName.endsWith(it.friendlyName) && item.type == it.icon }
-        }
-    }
 
 }

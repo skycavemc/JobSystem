@@ -1,7 +1,6 @@
 package de.leonheuer.skycave.jobsystem.manager
 
 import de.leonheuer.skycave.jobsystem.JobSystem
-import de.leonheuer.skycave.jobsystem.enums.Job
 import de.leonheuer.skycave.jobsystem.model.NPC
 import de.leonheuer.skycave.jobsystem.model.User
 import de.leonheuer.skycave.jobsystem.util.DataUtil
@@ -16,7 +15,6 @@ import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
-import java.time.LocalDateTime
 import java.util.*
 
 class DataManager(main: JobSystem) {

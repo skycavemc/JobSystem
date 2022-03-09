@@ -18,7 +18,6 @@ import java.util.*
 object DataUtil {
 
     private val main = JavaPlugin.getPlugin(JobSystem::class.java)
-    private val path = File(main.dataFolder.path + "/")
     private val userPath = File(main.dataFolder.path + "/players/")
     private val parser = JSONParser()
 

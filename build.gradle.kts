@@ -1,31 +1,23 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.6.10"
 }
 
 group = "de.leonheuer.skycave"
-version = "1.1.0"
+version = "2.0.0"
 
 repositories {
     mavenCentral()
     maven { url = uri("https://jitpack.io") }
-    maven {
-        url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-        content {
-            includeGroup("org.bukkit")
-            includeGroup("org.spigotmc")
-        }
-    }
-    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
-    maven { url = uri("https://oss.sonatype.org/content/repositories/central") }
+    maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
 }
 
 dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.6.0")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
-    compileOnly("org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.0")
+    compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+    compileOnly("com.github.heuerleon:mcguiapi:v1.3.3")
 }
 
 tasks {
@@ -33,15 +25,16 @@ tasks {
         useJUnit()
     }
 
-    withType<KotlinCompile>() {
-        kotlinOptions.jvmTarget = "11"
+    withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "17"
     }
 }
+
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = "11"
+    jvmTarget = "17"
 }
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "11"
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }

@@ -3,16 +3,16 @@ package de.leonheuer.skycave.jobsystem.model
 import de.leonheuer.skycave.jobsystem.JobSystem
 import org.bukkit.ChatColor
 
-class FormattableString(val base: String) {
+class ColoredStringBuilder(base: String) {
 
     private var result = base
 
-    fun replace(old: String, new: String): FormattableString {
+    fun replace(old: String, new: String): ColoredStringBuilder {
         result = result.replaceFirst(old, new)
         return this
     }
 
-    fun replaceAll(old: String, new: String): FormattableString {
+    fun replaceAll(old: String, new: String): ColoredStringBuilder {
         result = result.replace(old, new)
         return this
     }

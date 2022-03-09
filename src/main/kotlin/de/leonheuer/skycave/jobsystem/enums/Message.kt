@@ -1,11 +1,10 @@
 package de.leonheuer.skycave.jobsystem.enums
 
-import de.leonheuer.skycave.jobsystem.model.FormattableString
+import de.leonheuer.skycave.jobsystem.model.ColoredStringBuilder
 
 enum class Message(private val message: String) {
 
     UNKNOWN_COMMAND("&cUnbekannter Befehl. Siehe /job help"),
-    INTERNAL_ERROR("&cBei der Jobauswahl ist ein Fehler aufgetreten."),
 
     // job admin help
     JOB_ADMIN_HELP_SET_NPC("&e/job setnpc &8» &7Setzt den NPC für das GUI"),
@@ -35,11 +34,10 @@ enum class Message(private val message: String) {
     // sell item messages
     SELL_NOT_ENOUGH("&cDu hast nicht genug %name."),
     SELL_SOLD("&7Du hast &a%amountx %name &7für &a%reward$ &7verkauft."),
-    SELL_JOB_REQUIRED("&cDu brauchst einen Job, um dieses Item zu verkaufen."),
     ;
 
-    fun getString(): FormattableString {
-        return FormattableString(message)
+    fun getString(): ColoredStringBuilder {
+        return ColoredStringBuilder(message)
     }
 
 }

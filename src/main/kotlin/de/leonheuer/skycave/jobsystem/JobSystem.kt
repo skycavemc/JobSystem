@@ -1,9 +1,9 @@
 package de.leonheuer.skycave.jobsystem
 
+import de.leonheuer.mcguiapi.gui.GUIFactory
 import de.leonheuer.skycave.jobsystem.command.GSellCommand
 import de.leonheuer.skycave.jobsystem.command.JobCommand
 import de.leonheuer.skycave.jobsystem.command.SellCommand
-import de.leonheuer.skycave.jobsystem.listener.InventoryClickListener
 import de.leonheuer.skycave.jobsystem.listener.PlayerInteractListener
 import de.leonheuer.skycave.jobsystem.listener.PlayerJoinLeaveListener
 import de.leonheuer.skycave.jobsystem.manager.DataManager
@@ -25,17 +25,19 @@ class JobSystem: JavaPlugin() {
         private set
     lateinit var economy: Economy
         private set
+    lateinit var guiFactory: GUIFactory
+        private set
 
     override fun onEnable() {
         dataManager = DataManager(this)
         Bukkit.getOnlinePlayers().forEach(dataManager::registerUser)
         playerManager = PlayerManager()
         economy = server.servicesManager.getRegistration(Economy::class.java)!!.provider
+        guiFactory = GUIFactory(this)
 
         val pm = Bukkit.getPluginManager()
         pm.registerEvents(PlayerInteractListener(this), this)
         pm.registerEvents(PlayerJoinLeaveListener(this), this)
-        pm.registerEvents(InventoryClickListener(this), this)
 
         getCommand("job")!!.setExecutor(JobCommand(this))
         getCommand("sell")!!.setExecutor(SellCommand())

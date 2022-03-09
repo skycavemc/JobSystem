@@ -1,18 +1,19 @@
 package de.leonheuer.skycave.jobsystem.util
 
+import de.leonheuer.mcguiapi.gui.GUIPattern
+import de.leonheuer.mcguiapi.utils.ItemBuilder
 import de.leonheuer.skycave.jobsystem.JobSystem
 import de.leonheuer.skycave.jobsystem.enums.*
-import de.leonheuer.skycave.jobsystem.model.CustomItem
 import de.leonheuer.skycave.jobsystem.model.User
-import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import java.text.DecimalFormat
+import java.time.Duration
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -20,113 +21,181 @@ object Util {
 
     private val main = JavaPlugin.getPlugin(JobSystem::class.java)
 
-    @Suppress("Deprecation")
     fun openGUI(player: Player, view: GUIView) {
-        val inv = Bukkit.createInventory(player, 54, view.getTitle())
-        placeholdersByPattern(inv, 0, "bnnnbnnnb")
-        placeholdersByPattern(inv, 5, "bbbbbbbbb")
+        val pattern = GUIPattern.ofPattern("bbbbbbbbb")
+            .withMaterial('b', ItemBuilder.of(Material.BLACK_STAINED_GLASS_PANE).name("§0").asItem())
+        val gui = main.guiFactory.createGUI(6, view.getTitle())
+            .formatPattern(pattern.startAtLine(1))
+            .formatPattern(pattern.startAtLine(6))
 
         val user = main.dataManager.getRegisteredUser(player)
         val uuid = player.uniqueId
-
         val date = user.jobChangeDate
-        if (date == null) {
-            inv.setItem(1, CustomItem(Material.CLOCK, 1)
-                .setName("§6Letzter Berufswechsel:")
-                .setLore("§cnoch nie")
-                .itemStack)
-        } else {
-            val formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm")
-            inv.setItem(1, CustomItem(Material.CLOCK, 1)
-                .setName("§6Letzter Berufswechsel:")
-                .setLore("§b${formatter.format(date)}",
-                    "", "§7Du kannst alle 48 Stunden", "§7deinen Beruf wechseln")
-                .itemStack)
-        }
-
         val job = user.job
-        if (job == null) {
-            inv.setItem(2, CustomItem(Material.BARRIER, 1)
-                .setName("§6Dein Beruf:")
-                .setLore("§cDu hast keinen Beruf")
-                .itemStack)
+
+        if (date == null) {
+            gui.setItem(1, 2, ItemBuilder.of(Material.CLOCK)
+                .name("§6Letzter Berufswechsel:")
+                .description("§cnoch nie")
+                .asItem())
         } else {
-            inv.setItem(2, CustomItem(job.icon, 1)
-                .setName("§6Dein Beruf:")
-                .setLore("§b${job.friendlyName}", "", "§7Dein Beruf bestimmt, welche Items",
-                    "§7du bei dem persönlichen", "§7Ankauf verkaufen kannst.")
-                .addFlag(ItemFlag.HIDE_ATTRIBUTES)
-                .itemStack)
+            val dtf = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm")
+            gui.setItem(1, 2, ItemBuilder.of(Material.CLOCK)
+                .name("§6Letzter Berufswechsel:")
+                .description(
+                    "§b${dtf.format(date)}", "",
+                    "§7Du kannst alle 48 Stunden", "§7deinen Beruf wechseln"
+                ).asItem())
         }
 
-        inv.setItem(3, CustomItem(Material.PAPER, 1)
-            .setName("§6Kostenlose Berufswechsel:")
-            .setLore("§7Du kannst noch §b${user.freeJobChanges} mal", "§7kostenlos deinen Beruf wechseln.",
-                "", "§7Hast du keinen kostenlosen Wechsel", "§7mehr übrig, musst du §6100.000$ §7zahlen.")
-            .itemStack)
-        inv.setItem(5, CustomItem(Material.FLETCHING_TABLE, 1)
-            .setName("§6Berufe")
-            .setLore("§7Öffnet die Auswahl der Berufe")
-            .itemStack)
-        inv.setItem(6, CustomItem(Material.IRON_INGOT, 1)
-            .setName("§6Allgemeiner Ankauf")
-            .setLore("§7Öffnet den Ankauf")
-            .itemStack)
-        inv.setItem(7, CustomItem(Material.GOLD_INGOT, 1)
-            .setName("§6Persönlicher Ankauf")
-            .setLore("§7Öffnet einen Ankauf, der je", "§7nach Beruf variiert.")
-            .itemStack)
+        if (job == null) {
+            gui.setItem(1,3, ItemBuilder.of(Material.BARRIER)
+                .name("§6Dein Beruf:")
+                .description("§cDu hast keinen Beruf")
+                .asItem())
+        } else {
+            val item = ItemBuilder.of(job.icon)
+                .name("§6Dein Beruf:")
+                .description(
+                    "§b${job.friendlyName}", "", "§7Dein Beruf bestimmt, welche Items",
+                    "§7du bei dem persönlichen", "§7Ankauf verkaufen kannst."
+                ).asItem()
+            item.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
+            gui.setItem(1, 3, item)
+        }
+
+        gui.setItem(1, 4, ItemBuilder.of(Material.PAPER)
+            .name("§6Kostenlose Berufswechsel:")
+            .description(
+                "§7Du kannst noch §b${user.freeJobChanges} mal", "§7kostenlos deinen Beruf wechseln.",
+                "", "§7Hast du keinen kostenlosen Wechsel", "§7mehr übrig, musst du §6100.000$ §7zahlen."
+            ).asItem()
+        ).setItem(5, ItemBuilder.of(Material.FLETCHING_TABLE)
+            .name("§6Berufe")
+            .description("§7Öffnet die Auswahl der Berufe")
+            .asItem()
+        ) {
+            if (view != GUIView.JOBS) {
+                CustomSound.CLICK.playTo(player)
+                openGUI(player, GUIView.JOBS)
+            }
+        }.setItem(6, ItemBuilder.of(Material.IRON_INGOT)
+            .name("§6Allgemeiner Ankauf")
+            .description("§7Öffnet den Ankauf")
+            .asItem()
+        ){
+            if (view != GUIView.SELL) {
+                CustomSound.CLICK.playTo(player)
+                openGUI(player, GUIView.SELL)
+            }
+        }.setItem(7, ItemBuilder.of(Material.GOLD_INGOT)
+            .name("§6Persönlicher Ankauf")
+            .description("§7Öffnet einen Ankauf, der je", "§7nach Beruf variiert.")
+            .asItem()
+        ){
+            if (view != GUIView.SELL_PERSONAL) {
+                CustomSound.CLICK.playTo(player)
+                openGUI(player, GUIView.SELL_PERSONAL)
+            }
+        }
 
         if (view != GUIView.JOBS) {
-            inv.setItem(48, CustomItem(Material.MAGENTA_GLAZED_TERRACOTTA, 1).setName("§bUmrechnung")
-                .setLore("§7Rechne die Preise der Items", "§7automatisch um. Umrechnen in:",
+            gui.setItem(6, 4, ItemBuilder.of(Material.MAGENTA_GLAZED_TERRACOTTA)
+                .name("§bUmrechnung")
+                .description(
+                    "§7Rechne die Preise der Items", "§7automatisch um. Umrechnen in:",
                     getCalcAmountLine(uuid, 1),
                     getCalcAmountLine(uuid, 64),
                     getCalcAmountLine(uuid, 2304),
-                    "",
-                    "§7Zum Durchschalten klicken"
-                ).itemStack)
-            inv.setItem(50, CustomItem(Material.SUNFLOWER, 1).setName("§bVerkauf")
-                .setLore("§7Lege fest, wie viele Items", "§7auf einmal verkauft werden:",
+                    "", "§7Zum Durchschalten klicken"
+                ).asItem()
+            ) {
+                CustomSound.CLICK.playTo(player)
+                setNextCalcAmount(player.uniqueId)
+                openGUI(player, view)
+            }.setItem(6, 6, ItemBuilder.of(Material.SUNFLOWER)
+                .name("§bVerkauf")
+                .description(
+                    "§7Lege fest, wie viele Items", "§7auf einmal verkauft werden:",
                     getSellAmountLine(uuid, 1),
                     getSellAmountLine(uuid, 64),
                     getSellAmountLine(uuid, 2304),
-                    "",
-                    "§7Zum Durchschalten klicken"
-                ).itemStack)
+                    "", "§7Zum Durchschalten klicken"
+                ).asItem()
+            ) {
+                CustomSound.CLICK.playTo(player)
+                setNextSellAmount(player.uniqueId)
+                openGUI(player, view)
+            }
         }
 
         when (view) {
             GUIView.JOBS -> {
                 var slot = 19
-                Job.values().forEach {
+                for (j: Job in Job.values()) {
                     // margin
                     if (slot.mod(9) == 0) {
                         slot ++
                     } else if ((slot + 1).mod(9) == 0) {
                         slot += 2
                     }
-                    inv.setItem(slot, CustomItem(it.icon, 1)
-                        .setName("§b${it.friendlyName}").setLore("§7Klicke für Berufswechsel", "",
-                            "§aItems für den persönlichen Ankauf:", "§e§o${it.sellContent}"
-                        ).addFlag(ItemFlag.HIDE_ATTRIBUTES).itemStack)
+
+                    val item = ItemBuilder.of(j.icon)
+                        .name("§b${j.friendlyName}")
+                        .description(
+                            "§7Klicke für Berufswechsel", "",
+                            "§aItems für den persönlichen Ankauf:", "§e§o${j.sellContent}"
+                        ).asItem()
+                    item.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
+
+                    gui.setItem(slot, item) {
+                        val result = getRequirementResult(player, user)
+                        if (result == RequirementResult.FIRST) {
+                            openConfirmGUI(player, j, result)
+                            return@setItem
+                        }
+
+                        if (j == job) {
+                            CustomSound.ERROR.playTo(player)
+                            player.sendMessage(
+                                Message.JOB_CHANGE_ALREADY.getString().replaceAll("%job", job.friendlyName).get()
+                            )
+                            return@setItem
+                        }
+
+                        if (Duration.between(user.jobChangeDate, LocalDateTime.now()).toHours() < 48) {
+                            CustomSound.ERROR.playTo(player)
+                            player.sendMessage(Message.JOB_CHANGE_WAIT.getString().get())
+                            return@setItem
+                        }
+
+                        when (result) {
+                            RequirementResult.NO_MONEY -> {
+                                CustomSound.ERROR.playTo(player)
+                                player.sendMessage(Message.JOB_CHANGE_NO_MONEY.getString().get())
+                            }
+                            else -> {
+                                openConfirmGUI(player, j, result)
+                            }
+                        }
+                    }
                     slot++
                 }
             }
             GUIView.SELL -> {
-                val calc = if (!main.playerManager.calculateAmount.containsKey(uuid)) {
-                    1
-                } else {
-                    main.playerManager.calculateAmount[uuid]!!
-                }
-                var slot = 18
-                GlobalItem.values().forEach {
-                    val price = DecimalFormat("#.##").format((it.price / it.amount) * calc)
-                    inv.setItem(slot, CustomItem(it.material, 1).setName("§6${it.friendlyName}")
-                        .setLore("§8- §7Umrechnung §8-",
-                            "§eAnzahl: §6$calc", "§ePreis: §6$price$")
-                        .addFlag(ItemFlag.HIDE_ATTRIBUTES)
-                        .itemStack)
+                val calc = main.playerManager.calculateAmount.getOrDefault(uuid, 1)
+                val fmt = DecimalFormat("#.##")
+                var slot = 9
+                for (i: GlobalItem in GlobalItem.values()) {
+                    val price = fmt.format((i.price / i.amount) * calc)
+                    val item = ItemBuilder.of(i.material)
+                        .name("§6${i.friendlyName}")
+                        .description(
+                            "§8- §7Umrechnung §8-",
+                            "§eAnzahl: §6$calc", "§ePreis: §6$price$"
+                        ).asItem()
+                    item.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
+                    gui.setItem(slot, item) { sellItem(player, i) }
                     slot++
                 }
             }
@@ -137,26 +206,29 @@ object Util {
                     return
                 }
 
-                val calc = if (!main.playerManager.calculateAmount.containsKey(uuid)) {
-                    1
-                } else {
-                    main.playerManager.calculateAmount[uuid]!!
-                }
-                var slot = 18
-                JobSpecificItem.values().filter { it.job == user.job }.forEach {
-                    val price = DecimalFormat("#.##").format((it.price / it.amount) * calc)
-                    inv.setItem(slot, CustomItem(it.material, 1).setName("§6${it.friendlyName}")
-                        .setLore("§8- §7Umrechnung §8-",
-                            "§eAnzahl: §6$calc", "§ePreis: §6$price$")
-                        .addFlag(ItemFlag.HIDE_ATTRIBUTES)
-                        .itemStack)
+                val calc = main.playerManager.calculateAmount.getOrDefault(uuid, 1)
+                val fmt = DecimalFormat("#.##")
+                var slot = 9
+                for (i: JobSpecificItem in JobSpecificItem.values()) {
+                    if (i.job != job) {
+                        continue
+                    }
+                    val price = fmt.format((i.price / i.amount) * calc)
+                    val item = ItemBuilder.of(i.material)
+                        .name("§6${i.friendlyName}")
+                        .description(
+                            "§8- §7Umrechnung §8-",
+                            "§eAnzahl: §6$calc", "§ePreis: §6$price$"
+                        ).asItem()
+                    item.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
+                    gui.setItem(slot, item) { sellItem(player, i) }
                     slot++
                 }
             }
             else -> throw IllegalArgumentException()
         }
 
-        player.openInventory(inv)
+        gui.show(player)
     }
 
     private fun getCalcAmountLine(uuid: UUID, amount: Int): String {
@@ -197,71 +269,69 @@ object Util {
         }
     }
 
-    @Suppress("Deprecation")
     fun openConfirmGUI(player: Player, job: Job, result: RequirementResult) {
-        val inv = Bukkit.createInventory(player, 27, GUIView.CONFIRM.getTitle())
-        placeholdersByPattern(inv, 0,
-            "ngggnrrrn",
-            "ngngnrnrn",
-            "ngggnrrrn"
-        )
-        inv.setItem(11, CustomItem(Material.LIME_CONCRETE, 1)
-            .setName("§aBestätige").setLore("§7${result.title}", "§7Dein Job wird zu ${job.friendlyName} geändert.")
-            .itemStack)
-        inv.setItem(15, CustomItem(Material.RED_CONCRETE, 1)
-            .setName("§cLehne ab").setLore("§7Dein Job wird nicht geändert.")
-            .itemStack)
-        player.openInventory(inv)
-    }
-
-    @Suppress("Deprecation")
-    fun extractResultFromItemMeta(item: ItemStack) : RequirementResult? {
-        val lore = item.itemMeta!!.lore ?: return null
-        val result = lore[0].substring(2)
-        return RequirementResult.values().firstOrNull { it.title == result }
-    }
-
-    @Suppress("Deprecation")
-    fun extractJobFromItemMeta(item: ItemStack): Job? {
-        val lore = item.itemMeta!!.lore ?: return null
-        val jobName = lore[1].split(" ")[4]
-        return Job.values().firstOrNull { it.friendlyName == jobName }
-    }
-
-    private fun placeholdersByPattern(inv: Inventory, startRow: Int, vararg pattern: String) {
-        var lineCount = startRow * 9
-        for (line in pattern) {
-            if (line.length != 9) {
-                continue
-            }
-            val parts = line.split("")
-            var slot = lineCount
-            for (identifier in parts) {
-                if (identifier.length != 1) {
-                    continue
+        val user = main.dataManager.getRegisteredUser(player)
+        val pattern = GUIPattern.ofPattern("_GGG_RRR_")
+            .withMaterial('G', ItemBuilder.of(Material.LIME_STAINED_GLASS_PANE).name("§0").asItem())
+            .withMaterial('R', ItemBuilder.of(Material.RED_STAINED_GLASS_PANE).name("§0").asItem())
+        main.guiFactory.createGUI(3, GUIView.CONFIRM.getTitle())
+            .formatPattern(pattern.startAtLine(1))
+            .formatPattern(pattern.startAtLine(2))
+            .formatPattern(pattern.startAtLine(3))
+            .setItem(2, 3, ItemBuilder.of(Material.LIME_CONCRETE)
+                .name("§aBestätige")
+                .description(
+                    "§7${result.title}", "§7Dein Job wird zu ${job.friendlyName} geändert."
+                ).asItem()
+            ) {
+                if (user.freeJobChanges == 0) {
+                    player.sendMessage(Message.JOB_CHANGE_ABORT.getString().get())
+                } else {
+                    player.sendMessage(Message.JOB_CHANGE_ABORT_FREE.getString().get())
                 }
-                val mat = patternToMaterial(identifier)
-                if (mat != null) {
-                    inv.setItem(slot, CustomItem(mat, 1).setName("§0").itemStack)
+                CustomSound.ERROR.playTo(player)
+            }.setItem(15, ItemBuilder.of(Material.RED_CONCRETE)
+                .name("§cLehne ab")
+                .description("§7Dein Job wird nicht geändert.")
+                .asItem()
+            ) {
+                when (result) {
+                    RequirementResult.PAY -> {
+                        user.job = job
+                        user.jobChangeDate = LocalDateTime.now()
+                        if (main.economy.withdrawPlayer(player, 20000.0).transactionSuccess()) {
+                            CustomSound.SUCCESS.playTo(player)
+                            player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
+                                .replace("%job", job.friendlyName).get())
+                            player.sendMessage(Message.JOB_CHANGE_PAY.getString().get())
+                        } else {
+                            CustomSound.ERROR.playTo(player)
+                        }
+                    }
+                    RequirementResult.FIRST -> {
+                        user.job = job
+                        user.jobChangeDate = LocalDateTime.now()
+                        CustomSound.SUCCESS.playTo(player)
+                        player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString().replace("%job", job.friendlyName).get())
+                        openGUI(player, GUIView.JOBS)
+                    }
+                    RequirementResult.USE_FREE -> {
+                        user.job = job
+                        user.jobChangeDate = LocalDateTime.now()
+                        user.freeJobChanges -= 1
+                        CustomSound.SUCCESS.playTo(player)
+                        player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
+                            .replace("%job", job.friendlyName).get())
+                        player.sendMessage(Message.JOB_CHANGE_USE_FREE.getString()
+                            .replace("%amount", user.freeJobChanges.toString()).get())
+                        openGUI(player, GUIView.JOBS)
+                    }
+                    else -> {}
                 }
-                slot++
-            }
-            lineCount += 9
-        }
+            }.show(player)
     }
 
-    private fun patternToMaterial(identifier: String): Material? {
-        return when (identifier) {
-            "n" -> null
-            "w" -> Material.WHITE_STAINED_GLASS_PANE
-            "b" -> Material.BLACK_STAINED_GLASS_PANE
-            "g" -> Material.LIME_STAINED_GLASS_PANE
-            "r" -> Material.RED_STAINED_GLASS_PANE
-            else -> null
-        }
-    }
-
-    fun getRequirementResult(player: Player, user: User): RequirementResult {
+    private fun getRequirementResult(player: Player, user: User): RequirementResult {
         if (user.jobChangeDate == null) {
             return RequirementResult.FIRST
         }
@@ -274,7 +344,7 @@ object Util {
         return RequirementResult.NO_MONEY
     }
 
-    fun sellItem(player: Player, item: JobSpecificItem) {
+    private fun sellItem(player: Player, item: JobSpecificItem) {
         val maxAmount = main.playerManager.sellAmount.getOrDefault(player.uniqueId, 1)
         var amount = getItemAmount(player.inventory, item.material)
         if (amount == 0 || !player.inventory.containsAtLeast(ItemStack(item.material, 1), 1)) {
@@ -294,13 +364,13 @@ object Util {
             .replace("%name", item.friendlyName)
             .replace("%reward", formatter.format(reward))
             .get())
-        player.inventory.removeItem(ItemStack(item.material, amount))
+        player.inventory.removeItemAnySlot(ItemStack(item.material, amount))
         main.economy.depositPlayer(player, reward)
         main.logger.info("${player.name} (UUID: ${player.uniqueId}) sold ${amount}x ${item.material} " +
                 "for $reward to the admin shop")
     }
 
-    fun sellItem(player: Player, item: GlobalItem) {
+    private fun sellItem(player: Player, item: GlobalItem) {
         val maxAmount = main.playerManager.sellAmount.getOrDefault(player.uniqueId, 1)
         var amount = getItemAmount(player.inventory, item.material)
         if (amount == 0 || !player.inventory.containsAtLeast(ItemStack(item.material, 1), 1)) {
@@ -320,7 +390,7 @@ object Util {
             .replace("%name", item.friendlyName)
             .replace("%reward", formatter.format(reward))
             .get())
-        player.inventory.removeItem(ItemStack(item.material, amount))
+        player.inventory.removeItemAnySlot(ItemStack(item.material, amount))
         main.economy.depositPlayer(player, reward)
         main.logger.info("${player.name} (UUID: ${player.uniqueId}) sold ${amount}x ${item.material} " +
                 "for $reward to the admin shop")

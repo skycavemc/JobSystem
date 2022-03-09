@@ -6,7 +6,6 @@ import de.leonheuer.skycave.jobsystem.enums.GUIView
 import de.leonheuer.skycave.jobsystem.enums.Message
 import de.leonheuer.skycave.jobsystem.model.NPC
 import de.leonheuer.skycave.jobsystem.util.Util
-import org.bukkit.Sound
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractAtEntityEvent

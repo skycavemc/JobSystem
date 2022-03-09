@@ -1,7 +1,6 @@
 package de.leonheuer.skycave.jobsystem.enums
 
 import org.bukkit.Material
-import org.bukkit.inventory.ItemStack
 
 enum class JobSpecificItem(
     val friendlyName: String,
@@ -67,14 +66,14 @@ enum class JobSpecificItem(
     NETHERRACK("Netherrack", Material.NETHERRACK, 2304, 200.0, Job.NETHER_WORKER),
     SOUL_SAND("Seelensand", Material.SOUL_SAND, 64, 20.0, Job.NETHER_WORKER),
     SOUL_SOIL("Seelenerde", Material.SOUL_SOIL, 64, 20.0, Job.NETHER_WORKER),
-    OBSIDIAN("Obsidian", Material.OBSIDIAN, 1, 1.0, Job.NETHER_WORKER),
-    CRYING_OBSIDIAN("Weinender Obsidian", Material.CRYING_OBSIDIAN, 1, 10.0, Job.NETHER_WORKER),
+    OBSIDIAN("Obsidian", Material.OBSIDIAN, 1, 5.0, Job.NETHER_WORKER),
+    CRYING_OBSIDIAN("Weinender Obsidian", Material.CRYING_OBSIDIAN, 1, 25.0, Job.NETHER_WORKER),
     BASALT("Basalt", Material.BASALT, 2304, 200.0, Job.NETHER_WORKER),
-    BLACKSTONE("Schwarzstein", Material.BLACKSTONE, 64, 10.0, Job.NETHER_WORKER),
+    BLACKSTONE("Schwarzstein", Material.BLACKSTONE, 64, 64.0, Job.NETHER_WORKER),
     GILDED_BLACKSTONE("Golddurchzogener Schwarzstein", Material.GILDED_BLACKSTONE, 1, 10.0, Job.NETHER_WORKER),
     MAGMA_BLOCK("Magmablock", Material.MAGMA_BLOCK, 1, 8.0, Job.NETHER_WORKER),
-    NETHER_BRICKS("Netherziegel", Material.NETHER_BRICKS, 64, 10.0, Job.NETHER_WORKER),
-    RED_NETHER_BRICKS("Rote Netherziegel", Material.RED_NETHER_BRICKS, 64, 10.0, Job.NETHER_WORKER),
+    NETHER_BRICKS("Netherziegel", Material.NETHER_BRICKS, 64, 20.0, Job.NETHER_WORKER),
+    RED_NETHER_BRICKS("Rote Netherziegel", Material.RED_NETHER_BRICKS, 64, 64.0, Job.NETHER_WORKER),
     CRIMSON_STEM("Karmesinstiel", Material.CRIMSON_STEM, 1, 6.0, Job.NETHER_WORKER),
     WEEPING_VINES("Trauerranken", Material.WEEPING_VINES, 64, 16.0, Job.NETHER_WORKER),
     CRIMSON_FUNGUS("Karmesinpilz", Material.CRIMSON_FUNGUS, 1, 5.0, Job.NETHER_WORKER),
@@ -84,7 +83,7 @@ enum class JobSpecificItem(
     NETHERITE_INGOT("Netheritbarren", Material.NETHERITE_INGOT, 1, 2500.0, Job.NETHER_WORKER),
     MAGMA_CREAM("Magmacreme", Material.MAGMA_CREAM, 1, 2.0, Job.NETHER_WORKER),
     BLAZE_ROD("Lohenrute", Material.BLAZE_ROD, 1, 3.0, Job.NETHER_WORKER),
-    NETHER_WART("Netherwarze", Material.NETHER_WART, 64, 40.0, Job.NETHER_WORKER),
+    NETHER_WART("Netherwarze", Material.NETHER_WART, 64, 64.0, Job.NETHER_WORKER),
     GLOWSTONE_DUST("Glowstonestaub", Material.GLOWSTONE_DUST, 1, 6.0, Job.NETHER_WORKER),
     GHAST_TEAR("Ghastträne", Material.GHAST_TEAR, 1, 200.0, Job.NETHER_WORKER),
     QUARTZ("Quarz", Material.QUARTZ, 1, 4.0, Job.NETHER_WORKER),
@@ -95,15 +94,17 @@ enum class JobSpecificItem(
     COOKED_BEEF("Steak", Material.COOKED_BEEF, 1, 7.0, Job.COOK),
     COOKED_PORKCHOP("Gebratenes Schweinefleisch", Material.COOKED_PORKCHOP, 1, 7.0, Job.COOK),
     COOKED_CHICKEN("Gebratenes Hühnchen", Material.COOKED_CHICKEN, 1, 5.0, Job.COOK),
-    BAKED_POTATO("Ofenkartoffel", Material.BAKED_POTATO, 1, 3.0, Job.COOK),
-    CAKE("Kuchen", Material.CAKE, 1, 15.0, Job.COOK),
-    PUMPKIN_PIE("Kürbiskuchen", Material.PUMPKIN_PIE, 64, 16.0, Job.COOK),
-    MUSHROOM_STEW("Pilzsuppe", Material.MUSHROOM_STEW, 1, 3.0, Job.COOK),
-    RABBIT_STEW("Kaninchenragout", Material.RABBIT_STEW, 1, 3.0, Job.COOK),
-    BEETROOT_SOUP("Rote Beete Suppe", Material.BEETROOT_SOUP, 1, 3.0, Job.COOK),
-    TROPICAL_FISH("Tropenfisch", Material.TROPICAL_FISH, 1, 4.0, Job.COOK),
     COOKED_SALMON("Gebratener Lachs", Material.COOKED_SALMON, 1, 4.0, Job.COOK),
     COOKED_COD("Gebratener Kabeljau", Material.COOKED_COD, 1, 4.0, Job.COOK),
+    TROPICAL_FISH("Tropenfisch", Material.TROPICAL_FISH, 1, 4.0, Job.COOK),
+    CAKE("Kuchen", Material.CAKE, 1, 15.0, Job.COOK),
+    PUMPKIN_PIE("Kürbiskuchen", Material.PUMPKIN_PIE, 64, 16.0, Job.COOK),
+    MUSHROOM_STEW("Pilzsuppe", Material.MUSHROOM_STEW, 1, 6.0, Job.COOK),
+    RABBIT_STEW("Kaninchenragout", Material.RABBIT_STEW, 1, 9.0, Job.COOK),
+    BEETROOT_SOUP("Rote Beete Suppe", Material.BEETROOT_SOUP, 1, 5.0, Job.COOK),
+    BAKED_POTATO("Ofenkartoffel", Material.BAKED_POTATO, 1, 3.0, Job.COOK),
+    BREAD("Brot", Material.BREAD, 1, 4.0, Job.COOK),
+    COOKIE("Keks", Material.COOKIE, 16, 10.0, Job.COOK),
 
     // hunter items
     BONE("Knochen", Material.BONE, 64, 8.0, Job.HUNTER),
@@ -123,20 +124,11 @@ enum class JobSpecificItem(
     INK_SAC("Tintenbeutel", Material.INK_SAC, 64, 16.0, Job.HUNTER),
     GLOW_INK_SAC("Leuchttintenbeutel", Material.GLOW_INK_SAC, 64, 16.0, Job.HUNTER),
     PHANTOM_MEMBRANE("Phantomhaut", Material.PHANTOM_MEMBRANE, 1, 24.0, Job.HUNTER),
-    PUFFERFISH("Kugelfisch", Material.PUFFERFISH, 1, 16.0, Job.HUNTER),
-    ENDER_PEARL("Enderperle", Material.ENDER_PEARL, 16, 8.0, Job.HUNTER),
+    PUFFERFISH("Kugelfisch", Material.PUFFERFISH, 1, 5.0, Job.HUNTER),
+    ENDER_PEARL("Enderperle", Material.ENDER_PEARL, 1, 2.0, Job.HUNTER),
     NAUTILUS_SHELL("Nautilusschale", Material.NAUTILUS_SHELL, 1, 300.0, Job.HUNTER),
-    PRISMARINE_SHARD("Prismarinscherbe", Material.PRISMARINE_SHARD, 1, 8.0, Job.HUNTER),
-    PRISMARINE_CRYSTALS("Prismarinkristalle", Material.PRISMARINE_CRYSTALS, 1, 6.0, Job.HUNTER),
+    PRISMARINE_SHARD("Prismarinscherbe", Material.PRISMARINE_SHARD, 1, 30.0, Job.HUNTER),
+    PRISMARINE_CRYSTALS("Prismarinkristalle", Material.PRISMARINE_CRYSTALS, 1, 25.0, Job.HUNTER),
     ;
-
-
-    companion object {
-        @Suppress("Deprecation")
-        fun fromItemStack(itemStack: ItemStack, job: Job): JobSpecificItem? {
-            return values().firstOrNull { itemStack.itemMeta!!.displayName.endsWith(it.friendlyName) &&
-                    itemStack.type == it.material && job == it.job }
-        }
-    }
 
 }
