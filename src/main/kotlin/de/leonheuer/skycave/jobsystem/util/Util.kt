@@ -68,7 +68,7 @@ object Util {
             .name("§6Kostenlose Berufswechsel:")
             .description(
                 "§7Du kannst noch §b${user.freeJobChanges} mal", "§7kostenlos deinen Beruf wechseln.",
-                "", "§7Hast du keinen kostenlosen Wechsel", "§7mehr übrig, musst du §6100.000$ §7zahlen."
+                "", "§7Hast du keinen kostenlosen Wechsel", "§7mehr übrig, musst du §620.000$ §7zahlen."
             ).asItem()
         ).setItem(5, ItemBuilder.of(Material.FLETCHING_TABLE)
             .name("§6Berufe")
