@@ -17,6 +17,7 @@ class JobSystem: JavaPlugin() {
     companion object {
         const val PREFIX = "&b&l| &bJob&3System &8» "
         const val MASTER_VOLUME = 1.0f
+        const val JOB_CHANGE_FEE = 20000.0
     }
 
     lateinit var dataManager: DataManager

@@ -68,7 +68,7 @@ object Util {
             .name("§6Kostenlose Berufswechsel:")
             .description(
                 "§7Du kannst noch §b${user.freeJobChanges} mal", "§7kostenlos deinen Beruf wechseln.",
-                "", "§7Hast du keinen kostenlosen Wechsel", "§7mehr übrig, musst du §620.000$ §7zahlen."
+                "", "§7Hast du keinen kostenlosen Wechsel", "§7mehr übrig, musst du §6" + JobSystem.JOB_CHANGE_FEE + "$ §7zahlen."
             ).asItem()
         ).setItem(5, ItemBuilder.of(Material.FLETCHING_TABLE)
             .name("§6Berufe")
@@ -289,7 +289,7 @@ object Util {
                     RequirementResult.PAY -> {
                         user.job = job
                         user.jobChangeDate = LocalDateTime.now()
-                        if (main.economy.withdrawPlayer(player, 20000.0).transactionSuccess()) {
+                        if (main.economy.withdrawPlayer(player, JobSystem.JOB_CHANGE_FEE).transactionSuccess()) {
                             CustomSound.SUCCESS.playTo(player)
                             player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
                                 .replace("%job", job.friendlyName).get())
@@ -339,7 +339,7 @@ object Util {
         if (user.freeJobChanges > 0) {
             return RequirementResult.USE_FREE
         }
-        if (main.economy.getBalance(player) >= 100000.0) {
+        if (main.economy.getBalance(player) >= JobSystem.JOB_CHANGE_FEE) {
             return RequirementResult.PAY
         }
         return RequirementResult.NO_MONEY

@@ -1,5 +1,6 @@
 package de.leonheuer.skycave.jobsystem.enums
 
+import de.leonheuer.skycave.jobsystem.JobSystem
 import de.leonheuer.skycave.jobsystem.model.ColoredStringBuilder
 
 enum class Message(private val message: String) {
@@ -25,7 +26,7 @@ enum class Message(private val message: String) {
     JOB_CHANGE_SUCCESS("&aDu hast deinen Beruf gewechselt! Neuer Beruf: &2%job"),
     JOB_CHANGE_WAIT("&cDu musst 48 Stunden zwischen jedem Berufswechsel warten."),
     JOB_CHANGE_USE_FREE("&eDu hast deinen Job kostenlos gewechselt. Es verbleiben %amount kostenlose Wechsel."),
-    JOB_CHANGE_PAY("&eDu hast deinen Job für 100.000$ gewechselt."),
+    JOB_CHANGE_PAY("&eDu hast deinen Job für " + JobSystem.JOB_CHANGE_FEE + "$ gewechselt."),
     JOB_CHANGE_NO_MONEY("&cDu hast nicht genug Geld um deinen Beruf zu wechseln."),
     JOB_CHANGE_ABORT_FREE("&cKostenloser Wechsel des Jobs abgebrochen."),
     JOB_CHANGE_ABORT("&cKostenpflichtiger Wechsel des Jobs abgebrochen."),
