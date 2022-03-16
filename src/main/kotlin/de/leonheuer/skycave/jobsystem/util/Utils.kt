@@ -1,5 +1,6 @@
 package de.leonheuer.skycave.jobsystem.util
 
+import com.mongodb.client.model.Filters
 import de.leonheuer.mcguiapi.gui.GUIPattern
 import de.leonheuer.mcguiapi.utils.ItemBuilder
 import de.leonheuer.skycave.jobsystem.JobSystem
@@ -17,7 +18,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-object Util {
+object Utils {
 
     private val main = JavaPlugin.getPlugin(JobSystem::class.java)
 
@@ -28,9 +29,13 @@ object Util {
             .formatPattern(pattern.startAtLine(1))
             .formatPattern(pattern.startAtLine(6))
 
-        val user = main.dataManager.getRegisteredUser(player)
+        val filter = Filters.eq("uuid", player.uniqueId)
+        var user = main.users.find(filter).first()
+        if (user == null) {
+            user = User(player.uniqueId, null, null, 0, 0)
+        }
         val uuid = player.uniqueId
-        val date = user.jobChangeDate
+        val date = user.lastJobChange
         val job = user.job
 
         if (date == null) {
@@ -68,7 +73,7 @@ object Util {
             .name("§6Kostenlose Berufswechsel:")
             .description(
                 "§7Du kannst noch §b${user.freeJobChanges} mal", "§7kostenlos deinen Beruf wechseln.",
-                "", "§7Hast du keinen kostenlosen Wechsel", "§7mehr übrig, musst du §6" + JobSystem.JOB_CHANGE_FEE + "$ §7zahlen."
+                "", "§7Hast du keinen kostenlosen Wechsel", "§7mehr übrig, musst du §6${main.getJobChangeFee()}$ §7zahlen."
             ).asItem()
         ).setItem(5, ItemBuilder.of(Material.FLETCHING_TABLE)
             .name("§6Berufe")
@@ -163,7 +168,7 @@ object Util {
                             return@setItem
                         }
 
-                        if (Duration.between(user.jobChangeDate, LocalDateTime.now()).toHours() < 48) {
+                        if (Duration.between(date, LocalDateTime.now()).toHours() < 48) {
                             CustomSound.ERROR.playTo(player)
                             player.sendMessage(Message.JOB_CHANGE_WAIT.getString().get())
                             return@setItem
@@ -183,7 +188,7 @@ object Util {
                 }
             }
             GUIView.SELL -> {
-                val calc = main.playerManager.calculateAmount.getOrDefault(uuid, 1)
+                val calc = main.calculateAmount.getOrDefault(uuid, 1)
                 val fmt = DecimalFormat("#.##")
                 var slot = 9
                 for (i: GlobalItem in GlobalItem.values()) {
@@ -206,7 +211,7 @@ object Util {
                     return
                 }
 
-                val calc = main.playerManager.calculateAmount.getOrDefault(uuid, 1)
+                val calc = main.calculateAmount.getOrDefault(uuid, 1)
                 val fmt = DecimalFormat("#.##")
                 var slot = 9
                 for (i: JobSpecificItem in JobSpecificItem.values()) {
@@ -232,7 +237,7 @@ object Util {
     }
 
     private fun getCalcAmountLine(uuid: UUID, amount: Int): String {
-        val actual = main.playerManager.calculateAmount.getOrDefault(uuid, 1)
+        val actual = main.calculateAmount.getOrDefault(uuid, 1)
         val prefix = if (actual == amount) {
             "§a▸ §2"
         } else {
@@ -242,7 +247,7 @@ object Util {
     }
 
     private fun getSellAmountLine(uuid: UUID, amount: Int): String {
-        val actual = main.playerManager.sellAmount.getOrDefault(uuid, 1)
+        val actual = main.sellAmount.getOrDefault(uuid, 1)
         val prefix = if (actual == amount) {
             "§a▸ §2"
         } else {
@@ -251,8 +256,8 @@ object Util {
         return "$prefix$amount Stück"
     }
 
-    fun setNextCalcAmount(uuid: UUID) {
-        val map = main.playerManager.calculateAmount
+    private fun setNextCalcAmount(uuid: UUID) {
+        val map = main.calculateAmount
         when (map.getOrDefault(uuid, 1)) {
             1 -> map[uuid] = 64
             64 -> map[uuid] = 2304
@@ -260,8 +265,8 @@ object Util {
         }
     }
 
-    fun setNextSellAmount(uuid: UUID) {
-        val map = main.playerManager.sellAmount
+    private fun setNextSellAmount(uuid: UUID) {
+        val map = main.sellAmount
         when (map.getOrDefault(uuid, 1)) {
             1 -> map[uuid] = 64
             64 -> map[uuid] = 2304
@@ -269,8 +274,13 @@ object Util {
         }
     }
 
-    fun openConfirmGUI(player: Player, job: Job, result: RequirementResult) {
-        val user = main.dataManager.getRegisteredUser(player)
+    private fun openConfirmGUI(player: Player, job: Job, result: RequirementResult) {
+        val filter = Filters.eq("uuid", player.uniqueId)
+        var user = main.users.find(filter).first()
+        if (user == null) {
+            user = User(player.uniqueId, null, null, 0, 0)
+        }
+
         val pattern = GUIPattern.ofPattern("_GGG_RRR_")
             .withMaterial('G', ItemBuilder.of(Material.LIME_STAINED_GLASS_PANE).name("§0").asItem())
             .withMaterial('R', ItemBuilder.of(Material.RED_STAINED_GLASS_PANE).name("§0").asItem())
@@ -288,26 +298,27 @@ object Util {
                 when (result) {
                     RequirementResult.PAY -> {
                         user.job = job
-                        user.jobChangeDate = LocalDateTime.now()
-                        if (main.economy.withdrawPlayer(player, JobSystem.JOB_CHANGE_FEE).transactionSuccess()) {
+                        user.lastJobChange = LocalDateTime.now()
+                        if (main.economy.withdrawPlayer(player, main.getJobChangeFee()).transactionSuccess()) {
                             CustomSound.SUCCESS.playTo(player)
                             player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
                                 .replace("%job", job.friendlyName).get())
-                            player.sendMessage(Message.JOB_CHANGE_PAY.getString().get())
+                            player.sendMessage(Message.JOB_CHANGE_PAY.getString()
+                                .replace("%fee", "" + main.getJobChangeFee()).get())
                         } else {
                             CustomSound.ERROR.playTo(player)
                         }
                     }
                     RequirementResult.FIRST -> {
                         user.job = job
-                        user.jobChangeDate = LocalDateTime.now()
+                        user.lastJobChange = LocalDateTime.now()
                         CustomSound.SUCCESS.playTo(player)
                         player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString().replace("%job", job.friendlyName).get())
                         openGUI(player, GUIView.JOBS)
                     }
                     RequirementResult.USE_FREE -> {
                         user.job = job
-                        user.jobChangeDate = LocalDateTime.now()
+                        user.lastJobChange = LocalDateTime.now()
                         user.freeJobChanges -= 1
                         CustomSound.SUCCESS.playTo(player)
                         player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
@@ -333,20 +344,20 @@ object Util {
     }
 
     private fun getRequirementResult(player: Player, user: User): RequirementResult {
-        if (user.jobChangeDate == null) {
+        if (user.lastJobChange == null) {
             return RequirementResult.FIRST
         }
         if (user.freeJobChanges > 0) {
             return RequirementResult.USE_FREE
         }
-        if (main.economy.getBalance(player) >= JobSystem.JOB_CHANGE_FEE) {
+        if (main.economy.getBalance(player) >= main.getJobChangeFee()) {
             return RequirementResult.PAY
         }
         return RequirementResult.NO_MONEY
     }
 
     private fun sellItem(player: Player, item: JobSpecificItem) {
-        val maxAmount = main.playerManager.sellAmount.getOrDefault(player.uniqueId, 1)
+        val maxAmount = main.sellAmount.getOrDefault(player.uniqueId, 1)
         var amount = getItemAmount(player.inventory, item.material)
         if (amount == 0 || !player.inventory.containsAtLeast(ItemStack(item.material, 1), 1)) {
             CustomSound.ERROR.playTo(player)
@@ -372,7 +383,7 @@ object Util {
     }
 
     private fun sellItem(player: Player, item: GlobalItem) {
-        val maxAmount = main.playerManager.sellAmount.getOrDefault(player.uniqueId, 1)
+        val maxAmount = main.sellAmount.getOrDefault(player.uniqueId, 1)
         var amount = getItemAmount(player.inventory, item.material)
         if (amount == 0 || !player.inventory.containsAtLeast(ItemStack(item.material, 1), 1)) {
             CustomSound.ERROR.playTo(player)

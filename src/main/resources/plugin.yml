@@ -1,11 +1,9 @@
 main: de.leonheuer.skycave.jobsystem.JobSystem
 name: JobSystem
-version: 2.0.1
+version: 3.0.0
 api-version: 1.18
 author: Hakuyamu
-depend:
-  - SkyBeeCore
-  - Vault
+depend: [ SkyBeeCore, Vault ]
 
 commands:
   job:

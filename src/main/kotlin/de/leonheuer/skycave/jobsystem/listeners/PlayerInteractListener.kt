@@ -1,11 +1,12 @@
-package de.leonheuer.skycave.jobsystem.listener
+package de.leonheuer.skycave.jobsystem.listeners
 
 import de.leonheuer.skycave.jobsystem.JobSystem
 import de.leonheuer.skycave.jobsystem.enums.CustomSound
 import de.leonheuer.skycave.jobsystem.enums.GUIView
 import de.leonheuer.skycave.jobsystem.enums.Message
-import de.leonheuer.skycave.jobsystem.model.NPC
-import de.leonheuer.skycave.jobsystem.util.Util
+import de.leonheuer.skycave.jobsystem.util.Utils
+import org.bukkit.Location
+import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
@@ -16,11 +17,11 @@ class PlayerInteractListener(private val main: JobSystem): Listener {
     fun onPlayerInteract(event: PlayerInteractAtEntityEvent) {
         val player = event.player
         val entity = event.rightClicked
-        val location = entity.location.block.location
-        val list = main.playerManager.npcSetMode
+        val location = entity.location.toBlockLocation()
 
-        if (list.contains(player.uniqueId)) {
-            main.dataManager.npc = NPC(location, entity.type)
+        if (main.npcSetMode.contains(player.uniqueId)) {
+            main.config.set("npc_location", location)
+            main.config.set("npc_type", entity.type.toString())
             player.sendMessage(Message.JOB_ADMIN_SET_NPC_SUCCESS.getString()
                 .replace("%type", entity.type.toString().lowercase())
                 .replace("%x", location.x.toString())
@@ -28,15 +29,23 @@ class PlayerInteractListener(private val main: JobSystem): Listener {
                 .replace("%z", location.z.toString())
                 .get()
             )
-            main.dataManager.saveNPC()
-            list.remove(player.uniqueId)
+            main.npcSetMode.remove(player.uniqueId)
             return
         }
 
-        val npc = main.dataManager.npc ?: return
-        if (location.toVector() == npc.location.toVector() && entity.type == npc.entityType) {
+        val loc = main.config.get("npc_location", Location::class) ?: return
+        val type: EntityType
+        try {
+            val key = main.config.getString("npc_type") ?: return
+            type = EntityType.valueOf(key)
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+            return
+        }
+
+        if (location == loc && entity.type == type) {
             CustomSound.VILLAGER_OPEN.playTo(player)
-            Util.openGUI(player, GUIView.JOBS)
+            Utils.openGUI(player, GUIView.JOBS)
         }
     }
 

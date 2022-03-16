@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "de.leonheuer.skycave"
-version = "2.0.1"
+version = "3.0.0"
 
 repositories {
     mavenCentral()
@@ -18,6 +18,7 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly("com.github.heuerleon:mcguiapi:v1.3.3")
+    compileOnly("org.mongodb:mongodb-driver-sync:4.5.0")
 }
 
 tasks {
