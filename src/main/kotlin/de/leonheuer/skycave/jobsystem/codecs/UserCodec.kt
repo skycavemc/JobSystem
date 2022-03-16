@@ -2,6 +2,7 @@ package de.leonheuer.skycave.jobsystem.codecs
 
 import de.leonheuer.skycave.jobsystem.enums.Job
 import de.leonheuer.skycave.jobsystem.model.User
+import de.leonheuer.skycave.jobsystem.model.UserLevel
 import org.bson.BsonReader
 import org.bson.BsonType
 import org.bson.BsonWriter
@@ -17,6 +18,7 @@ class UserCodec(codecRegistry: CodecRegistry) : Codec<User> {
     private val uuidCodec: Codec<UUID> = codecRegistry.get(UUID::class.java)
     private val jobCodec: Codec<Job> = codecRegistry.get(Job::class.java)
     private val localDateTimeCodec: Codec<LocalDateTime> = codecRegistry.get(LocalDateTime::class.java)
+    private val userLevelCodec: Codec<UserLevel> = codecRegistry.get(UserLevel::class.java)
 
     override fun encode(writer: BsonWriter, value: User?, encoderContext: EncoderContext?) {
         if (value != null) {
@@ -30,7 +32,7 @@ class UserCodec(codecRegistry: CodecRegistry) : Codec<User> {
             writer.writeName("free_job_changes")
             writer.writeInt32(value.freeJobChanges)
             writer.writeName("experience")
-            writer.writeInt32(value.experience)
+            userLevelCodec.encode(writer, value.level, encoderContext)
             writer.writeEndDocument()
         }
     }
@@ -49,7 +51,7 @@ class UserCodec(codecRegistry: CodecRegistry) : Codec<User> {
                 "job" -> user.job = jobCodec.decode(reader, decoderContext)
                 "last_job_change" -> user.lastJobChange = localDateTimeCodec.decode(reader, decoderContext)
                 "free_job_changes" -> user.freeJobChanges = reader.readInt32()
-                "experience" -> user.experience = reader.readInt32()
+                "experience" -> user.level = userLevelCodec.decode(reader, decoderContext)
             }
         }
         reader.readEndDocument()

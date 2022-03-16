@@ -17,14 +17,14 @@ class User() {
     var lastJobChange: LocalDateTime? = null
     @BsonProperty(value = "free_job_changes")
     var freeJobChanges: Int = 0
-    var experience: Int = 0
+    var level: UserLevel = UserLevel(0.0)
 
-    constructor(uuid: UUID, job: Job?, lastJobChange: LocalDateTime?, freeJobChanges: Int, experience: Int) : this() {
+    constructor(uuid: UUID, job: Job?, lastJobChange: LocalDateTime?, freeJobChanges: Int, experience: UserLevel) : this() {
         this.uuid = uuid
         this.job = job
         this.lastJobChange = lastJobChange
         this.freeJobChanges = freeJobChanges
-        this.experience = experience
+        this.level = experience
     }
 
 }

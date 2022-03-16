@@ -6,6 +6,7 @@ import de.leonheuer.mcguiapi.utils.ItemBuilder
 import de.leonheuer.skycave.jobsystem.JobSystem
 import de.leonheuer.skycave.jobsystem.enums.*
 import de.leonheuer.skycave.jobsystem.model.User
+import de.leonheuer.skycave.jobsystem.model.UserLevel
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -32,7 +33,7 @@ object Utils {
         val filter = Filters.eq("uuid", player.uniqueId)
         var user = main.users.find(filter).first()
         if (user == null) {
-            user = User(player.uniqueId, null, null, 0, 0)
+            user = User(player.uniqueId, null, null, 0, UserLevel(0.0))
         }
         val uuid = player.uniqueId
         val date = user.lastJobChange
@@ -278,7 +279,7 @@ object Utils {
         val filter = Filters.eq("uuid", player.uniqueId)
         var user = main.users.find(filter).first()
         if (user == null) {
-            user = User(player.uniqueId, null, null, 0, 0)
+            user = User(player.uniqueId, null, null, 0, UserLevel(0.0))
         }
 
         val pattern = GUIPattern.ofPattern("_GGG_RRR_")

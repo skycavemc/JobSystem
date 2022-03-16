@@ -5,6 +5,7 @@ import de.leonheuer.skycave.jobsystem.JobSystem
 import de.leonheuer.skycave.jobsystem.enums.Job
 import de.leonheuer.skycave.jobsystem.model.OldUser
 import de.leonheuer.skycave.jobsystem.model.User
+import de.leonheuer.skycave.jobsystem.model.UserLevel
 import org.bukkit.plugin.java.JavaPlugin
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
@@ -18,7 +19,7 @@ import java.util.*
 object LegacyAdapter {
 
     private val main = JavaPlugin.getPlugin(JobSystem::class.java)
-    private val userPath = File("${main.dataFolder.path}/players/")
+    private val userPath = File("${main.dataFolder.path}/old_data/players/")
     private val parser = JSONParser()
 
     fun importUsers(users: MongoCollection<User>) {
@@ -35,7 +36,7 @@ object LegacyAdapter {
                 skipped++
                 continue
             }
-            val newUser = User(uuid, user.job, user.jobChangeDate, user.freeJobChanges, 0)
+            val newUser = User(uuid, user.job, user.jobChangeDate, user.freeJobChanges, UserLevel(0.0))
             users.insertOne(newUser)
             success++
         }

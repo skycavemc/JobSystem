@@ -5,10 +5,7 @@ import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoCollection
 import de.leonheuer.mcguiapi.gui.GUIFactory
-import de.leonheuer.skycave.jobsystem.codecs.JobCodec
-import de.leonheuer.skycave.jobsystem.codecs.LocalDateTimeCodec
-import de.leonheuer.skycave.jobsystem.codecs.UUIDCodec
-import de.leonheuer.skycave.jobsystem.codecs.UserCodecProvider
+import de.leonheuer.skycave.jobsystem.codecs.*
 import de.leonheuer.skycave.jobsystem.commands.GSellCommand
 import de.leonheuer.skycave.jobsystem.commands.JobCommand
 import de.leonheuer.skycave.jobsystem.commands.SellCommand
@@ -59,7 +56,7 @@ class JobSystem: JavaPlugin() {
 
         // database
         val codecRegistry: CodecRegistry = CodecRegistries.fromRegistries(
-            CodecRegistries.fromCodecs(JobCodec(), LocalDateTimeCodec(), UUIDCodec()),
+            CodecRegistries.fromCodecs(JobCodec(), LocalDateTimeCodec(), UUIDCodec(), UserLevelCodec()),
             CodecRegistries.fromProviders(UserCodecProvider()),
             MongoClientSettings.getDefaultCodecRegistry()
         )
