@@ -27,14 +27,19 @@ object LegacyAdapter {
         }
         val files = userPath.listFiles() ?: return
         var success = 0
+        var skipped = 0
         for (file in files) {
             val uuid = UUID.fromString(file.name.replace(".json", ""))
             val user = getUser(uuid) ?: continue
+            if (user.job == null && user.jobChangeDate == null) {
+                skipped++
+                continue
+            }
             val newUser = User(uuid, user.job, user.jobChangeDate, user.freeJobChanges, 0)
             users.insertOne(newUser)
             success++
         }
-        main.logger.info("Imported $success of ${files.size} users.")
+        main.logger.info("Imported $success of ${files.size} users. ($skipped skipped)")
     }
 
     private fun getUser(uuid: UUID): OldUser? {

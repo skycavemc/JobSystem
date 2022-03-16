@@ -33,7 +33,7 @@ class PlayerInteractListener(private val main: JobSystem): Listener {
             return
         }
 
-        val loc = main.config.get("npc_location", Location::class) ?: return
+        val loc = main.config.getSerializable("npc_location", Location::class.java) ?: return
         val type: EntityType
         try {
             val key = main.config.getString("npc_type") ?: return
@@ -43,7 +43,7 @@ class PlayerInteractListener(private val main: JobSystem): Listener {
             return
         }
 
-        if (location == loc && entity.type == type) {
+        if (location.world == loc.world && location.distance(loc) == 0.0 && entity.type == type) {
             CustomSound.VILLAGER_OPEN.playTo(player)
             Utils.openGUI(player, GUIView.JOBS)
         }

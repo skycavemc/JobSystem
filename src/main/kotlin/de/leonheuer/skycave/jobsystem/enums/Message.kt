@@ -18,7 +18,9 @@ enum class Message(private val message: String) {
     JOB_ADMIN_SET_NPC_SUCCESS("&7Ankauf NPC erfolgreich auf &a%type &7bei &ax: %x, y: %y, z: %z &7gesetzt."),
     JOB_ADMIN_CANCEL("&cSetzen des NPCs abgebrochen."),
     JOB_ADMIN_CANCEL_NOT("&cDu bist nicht dabei, einen NPC zu setzen."),
-    JOB_ADMIN_IMPORT("&aImport durchgeführt, siehe Konsole für Ergebnisse."),
+    JOB_ADMIN_IMPORT_START("&eBeginne Import..."),
+    JOB_ADMIN_IMPORT_FINISHED("&aImport durchgeführt (%time), siehe Konsole für Ergebnisse."),
+    JOB_ADMIN_IMPORT_ALREADY("&cDer Import wurde bereits durchgeführt."),
 
     // npc right click
     JOB_UNSET("&cBitte wähle zuerst einen Job (/job), um Zugriff auf den Ankauf zu bekommen."),

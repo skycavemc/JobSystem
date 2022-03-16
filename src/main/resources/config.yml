@@ -1,3 +1,4 @@
 job_change_fee: 20000.0
 npc_location: null
 npc_type: null
+import_done: false

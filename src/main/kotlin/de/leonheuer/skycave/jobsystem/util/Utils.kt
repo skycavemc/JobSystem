@@ -340,6 +340,7 @@ object Utils {
                     player.sendMessage(Message.JOB_CHANGE_ABORT_FREE.getString().get())
                 }
                 CustomSound.ERROR.playTo(player)
+                openGUI(player, GUIView.JOBS)
             }.show(player)
     }
 

@@ -42,8 +42,18 @@ class JobCommand(private val main: JobSystem): CommandExecutor, TabCompleter {
                     }
                 }
                 "import" -> {
-                    LegacyAdapter.importUsers(main.users)
-                    sender.sendMessage(Message.JOB_ADMIN_IMPORT.getString().get())
+                    if (main.config.getBoolean("import_done")) {
+                        sender.sendMessage(Message.JOB_ADMIN_IMPORT_ALREADY.getString().get())
+                        return true
+                    }
+                    val start = System.currentTimeMillis()
+                    sender.sendMessage(Message.JOB_ADMIN_IMPORT_START.getString().get())
+                    main.server.scheduler.runTaskAsynchronously(main, Runnable {
+                        LegacyAdapter.importUsers(main.users)
+                        sender.sendMessage(Message.JOB_ADMIN_IMPORT_FINISHED.getString()
+                            .replace("%time", "${System.currentTimeMillis() - start}ms").get())
+                    })
+                    main.config.set("import_done", true)
                 }
                 "help" -> {
                     sender.sendMessage(Message.JOB_ADMIN_HELP_SET_NPC.getString().get(prefix = false))
