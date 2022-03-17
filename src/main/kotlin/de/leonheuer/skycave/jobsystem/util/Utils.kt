@@ -280,6 +280,7 @@ object Utils {
         var user = main.users.find(filter).first()
         if (user == null) {
             user = User(player.uniqueId, null, null, 0, UserLevel(0.0))
+            main.users.insertOne(user)
         }
 
         val pattern = GUIPattern.ofPattern("_GGG_RRR_")
@@ -300,6 +301,7 @@ object Utils {
                     RequirementResult.PAY -> {
                         user.job = job
                         user.lastJobChange = LocalDateTime.now()
+                        main.users.replaceOne(filter, user)
                         if (main.economy.withdrawPlayer(player, main.getJobChangeFee()).transactionSuccess()) {
                             CustomSound.SUCCESS.playTo(player)
                             player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
@@ -313,6 +315,7 @@ object Utils {
                     RequirementResult.FIRST -> {
                         user.job = job
                         user.lastJobChange = LocalDateTime.now()
+                        main.users.replaceOne(filter, user)
                         CustomSound.SUCCESS.playTo(player)
                         player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString().replace("%job", job.friendlyName).get())
                         openGUI(player, GUIView.JOBS)
@@ -321,6 +324,7 @@ object Utils {
                         user.job = job
                         user.lastJobChange = LocalDateTime.now()
                         user.freeJobChanges -= 1
+                        main.users.replaceOne(filter, user)
                         CustomSound.SUCCESS.playTo(player)
                         player.sendMessage(Message.JOB_CHANGE_SUCCESS.getString()
                             .replace("%job", job.friendlyName).get())
