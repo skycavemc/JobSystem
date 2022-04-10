@@ -1,6 +1,7 @@
 package de.leonheuer.skycave.jobsystem.codecs
 
 import de.leonheuer.skycave.jobsystem.enums.Job
+import org.bson.BsonInvalidOperationException
 import org.bson.BsonReader
 import org.bson.BsonWriter
 import org.bson.codecs.Codec
@@ -22,8 +23,13 @@ class JobCodec : Codec<Job> {
     }
 
     @Throws(IllegalArgumentException::class)
-    override fun decode(reader: BsonReader, decoderContext: DecoderContext?): Job {
-        return Job.valueOf(reader.readString())
+    override fun decode(reader: BsonReader, decoderContext: DecoderContext?): Job? {
+        return try {
+            Job.valueOf(reader.readString())
+        } catch (e: BsonInvalidOperationException) {
+            reader.skipValue()
+            null
+        }
     }
 
 }

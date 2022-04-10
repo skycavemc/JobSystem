@@ -1,5 +1,6 @@
 package de.leonheuer.skycave.jobsystem.codecs
 
+import org.bson.BsonInvalidOperationException
 import org.bson.BsonReader
 import org.bson.BsonWriter
 import org.bson.codecs.Codec
@@ -21,8 +22,13 @@ class LocalDateTimeCodec : Codec<LocalDateTime> {
         return LocalDateTime::class.java
     }
 
-    override fun decode(reader: BsonReader, decoderContext: DecoderContext?): LocalDateTime {
-        return LocalDateTime.parse(reader.readString())
+    override fun decode(reader: BsonReader, decoderContext: DecoderContext?): LocalDateTime? {
+        return try {
+            LocalDateTime.parse(reader.readString())
+        } catch (e: BsonInvalidOperationException) {
+            reader.skipValue()
+            null
+        }
     }
 
 }
