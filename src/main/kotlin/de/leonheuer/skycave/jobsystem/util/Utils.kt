@@ -33,7 +33,8 @@ object Utils {
         val filter = Filters.eq("uuid", player.uniqueId)
         var user = main.users.find(filter).first()
         if (user == null) {
-            user = User(player.uniqueId, null, null, 0, UserLevel(0.0))
+            user = User(player.uniqueId, null, null, 6, UserLevel(0.0))
+            main.users.insertOne(user)
         }
         val uuid = player.uniqueId
         val date = user.lastJobChange
@@ -279,7 +280,7 @@ object Utils {
         val filter = Filters.eq("uuid", player.uniqueId)
         var user = main.users.find(filter).first()
         if (user == null) {
-            user = User(player.uniqueId, null, null, 0, UserLevel(0.0))
+            user = User(player.uniqueId, null, null, 6, UserLevel(0.0))
             main.users.insertOne(user)
         }
 
