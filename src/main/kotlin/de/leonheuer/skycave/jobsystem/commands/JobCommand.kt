@@ -1,10 +1,12 @@
 package de.leonheuer.skycave.jobsystem.commands
 
+import com.mongodb.client.model.Filters
 import de.leonheuer.skycave.jobsystem.JobSystem
 import de.leonheuer.skycave.jobsystem.enums.GUIView
 import de.leonheuer.skycave.jobsystem.enums.Message
 import de.leonheuer.skycave.jobsystem.util.LegacyAdapter
 import de.leonheuer.skycave.jobsystem.util.Utils
+import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -59,7 +61,27 @@ class JobCommand(private val main: JobSystem): CommandExecutor, TabCompleter {
                     sender.sendMessage(Message.JOB_ADMIN_HELP_SET_NPC.getString().get(prefix = false))
                     sender.sendMessage(Message.JOB_ADMIN_HELP_CANCEL.getString().get(prefix = false))
                     sender.sendMessage(Message.JOB_ADMIN_HELP_IMPORT.getString().get(prefix = false))
+                    sender.sendMessage(Message.JOB_ADMIN_HELP_RESETUSER.getString().get(prefix = false))
                     sender.sendMessage(Message.JOB_ADMIN_HELP_HELP.getString().get(prefix = false))
+                }
+                "resetuser" -> {
+                    if (args.size < 2) {
+                        sender.sendMessage(Message.JOB_ADMIN_RESETUSER_SYNTAX.getString().get())
+                        return true
+                    }
+                    val player = Bukkit.getOfflinePlayerIfCached(args[1])
+                    if (player == null) {
+                        sender.sendMessage(Message.PLAYER_UNKNOWN.getString().replace("%player", args[1]).get())
+                        return true
+                    }
+                    val filter = Filters.eq("uuid", player.uniqueId)
+                    val user = main.users.find(filter).first()
+                    if (user == null) {
+                        sender.sendMessage(Message.NO_USER_PROFILE.getString().replace("%player", args[1]).get())
+                        return true
+                    }
+                    main.users.deleteOne(filter)
+                    sender.sendMessage(Message.JOB_ADMIN_RESETUSER.getString().replace("%player", args[1]).get())
                 }
                 else -> {
                     sender.sendMessage(Message.UNKNOWN_COMMAND.getString().get())
@@ -85,8 +107,16 @@ class JobCommand(private val main: JobSystem): CommandExecutor, TabCompleter {
             arguments.add("setnpc")
             arguments.add("cancel")
             arguments.add("import")
+            arguments.add("resetuser")
             arguments.add("help")
             StringUtil.copyPartialMatches(args[0], arguments, completions)
+        }
+        if (args.size == 2) {
+            for (player in Bukkit.getOnlinePlayers()) {
+                val name = player.name
+                arguments.add(name)
+            }
+            StringUtil.copyPartialMatches(args[1], arguments, completions)
         }
 
         completions.sort()
