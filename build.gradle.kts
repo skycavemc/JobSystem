@@ -16,9 +16,9 @@ repositories {
 dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.6.0")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
-    compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.19-R0.1-SNAPSHOT")
     compileOnly("com.github.heuerleon:mcguiapi:v1.3.3")
-    compileOnly("org.mongodb:mongodb-driver-sync:4.5.1")
+    compileOnly("org.mongodb:mongodb-driver-sync:4.6.0")
 }
 
 tasks {

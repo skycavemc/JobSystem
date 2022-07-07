@@ -26,9 +26,10 @@ object Utils {
     fun openGUI(player: Player, view: GUIView) {
         val pattern = GUIPattern.ofPattern("bbbbbbbbb")
             .withMaterial('b', ItemBuilder.of(Material.BLACK_STAINED_GLASS_PANE).name("§0").asItem())
-        val gui = main.guiFactory.createGUI(6, view.getTitle())
-            .formatPattern(pattern.startAtLine(1))
-            .formatPattern(pattern.startAtLine(6))
+        val gui = main.guiFactory.createGUI(5, view.getTitle())
+        if (view != GUIView.MAIN) {
+            gui.formatPattern(pattern.startAtLine(1)).formatPattern(pattern.startAtLine(6))
+        }
 
         val filter = Filters.eq("uuid", player.uniqueId)
         var user = main.users.find(filter).first()
@@ -39,74 +40,8 @@ object Utils {
         val date = user.lastJobChange
         val job = user.job
 
-        if (date == null) {
-            gui.setItem(1, 2, ItemBuilder.of(Material.CLOCK)
-                .name("§6Letzter Berufswechsel:")
-                .description("§cnoch nie")
-                .asItem())
-        } else {
-            val dtf = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm")
-            gui.setItem(1, 2, ItemBuilder.of(Material.CLOCK)
-                .name("§6Letzter Berufswechsel:")
-                .description(
-                    "§b${dtf.format(date)}", "",
-                    "§7Du kannst alle 48 Stunden", "§7deinen Beruf wechseln"
-                ).asItem())
-        }
-
-        if (job == null) {
-            gui.setItem(1,3, ItemBuilder.of(Material.BARRIER)
-                .name("§6Dein Beruf:")
-                .description("§cDu hast keinen Beruf")
-                .asItem())
-        } else {
-            val item = ItemBuilder.of(job.icon)
-                .name("§6Dein Beruf:")
-                .description(
-                    "§b${job.friendlyName}", "", "§7Dein Beruf bestimmt, welche Items",
-                    "§7du bei dem persönlichen", "§7Ankauf verkaufen kannst."
-                ).asItem()
-            item.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
-            gui.setItem(1, 3, item)
-        }
-
-        gui.setItem(1, 4, ItemBuilder.of(Material.PAPER)
-            .name("§6Kostenlose Berufswechsel:")
-            .description(
-                "§7Du kannst noch §b${user.freeJobChanges} mal", "§7kostenlos deinen Beruf wechseln.",
-                "", "§7Hast du keinen kostenlosen Wechsel", "§7mehr übrig, musst du §6${main.getJobChangeFee()}$ §7zahlen."
-            ).asItem()
-        ).setItem(5, ItemBuilder.of(Material.FLETCHING_TABLE)
-            .name("§6Berufe")
-            .description("§7Öffnet die Auswahl der Berufe")
-            .asItem()
-        ) {
-            if (view != GUIView.JOBS) {
-                CustomSound.CLICK.playTo(player)
-                openGUI(player, GUIView.JOBS)
-            }
-        }.setItem(6, ItemBuilder.of(Material.IRON_INGOT)
-            .name("§6Allgemeiner Ankauf")
-            .description("§7Öffnet den Ankauf")
-            .asItem()
-        ){
-            if (view != GUIView.SELL) {
-                CustomSound.CLICK.playTo(player)
-                openGUI(player, GUIView.SELL)
-            }
-        }.setItem(7, ItemBuilder.of(Material.GOLD_INGOT)
-            .name("§6Persönlicher Ankauf")
-            .description("§7Öffnet einen Ankauf, der je", "§7nach Beruf variiert.")
-            .asItem()
-        ){
-            if (view != GUIView.SELL_PERSONAL) {
-                CustomSound.CLICK.playTo(player)
-                openGUI(player, GUIView.SELL_PERSONAL)
-            }
-        }
-
-        if (view != GUIView.JOBS) {
-            gui.setItem(6, 4, ItemBuilder.of(Material.MAGENTA_GLAZED_TERRACOTTA)
+        if (view == GUIView.SELL || view == GUIView.SELL_PERSONAL) {
+            gui.setItem(5, 4, ItemBuilder.of(Material.MAGENTA_GLAZED_TERRACOTTA)
                 .name("§bUmrechnung")
                 .description(
                     "§7Rechne die Preise der Items", "§7automatisch um. Umrechnen in:",
@@ -119,7 +54,7 @@ object Utils {
                 CustomSound.CLICK.playTo(player)
                 setNextCalcAmount(player.uniqueId)
                 openGUI(player, view)
-            }.setItem(6, 6, ItemBuilder.of(Material.SUNFLOWER)
+            }.setItem(5, 6, ItemBuilder.of(Material.SUNFLOWER)
                 .name("§bVerkauf")
                 .description(
                     "§7Lege fest, wie viele Items", "§7auf einmal verkauft werden:",
@@ -136,6 +71,88 @@ object Utils {
         }
 
         when (view) {
+            GUIView.MAIN -> {
+                if (date == null) {
+                    gui.setItem(2, 2, ItemBuilder.of(Material.CLOCK)
+                        .name("§6Letzter Berufswechsel:")
+                        .description("§cnoch nie")
+                        .asItem())
+                } else {
+                    val dtf = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm")
+                    gui.setItem(2, 2, ItemBuilder.of(Material.CLOCK)
+                        .name("§6Letzter Berufswechsel:")
+                        .description(
+                            "§b${dtf.format(date)}", "",
+                            "§7Du kannst alle 48 Stunden", "§7deinen Beruf wechseln"
+                        ).asItem())
+                }
+
+                if (job == null) {
+                    gui.setItem(2,3, ItemBuilder.of(Material.BARRIER)
+                        .name("§6Dein Beruf:")
+                        .description("§cDu hast keinen Beruf")
+                        .asItem())
+                } else {
+                    val item = ItemBuilder.of(job.icon)
+                        .name("§6Dein Beruf:")
+                        .description(
+                            "§b${job.friendlyName}", "", "§7Dein Beruf bestimmt, welche Items",
+                            "§7du bei dem persönlichen", "§7Ankauf verkaufen kannst."
+                        ).asItem()
+                    item.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
+                    gui.setItem(2, 3, item)
+                }
+
+                gui.setItem(2, 4, ItemBuilder.of(Material.PAPER)
+                    .name("§6Kostenlose Berufswechsel:")
+                    .description(
+                        "§7Du kannst noch §b${user.freeJobChanges} mal", "§7kostenlos deinen Beruf wechseln.",
+                        "", "§7Hast du keinen kostenlosen Wechsel", "§7mehr übrig, musst du §6${main.getJobChangeFee()}$ §7zahlen."
+                    ).asItem()
+                ).setItem(4, 2, ItemBuilder.of(Material.FLETCHING_TABLE)
+                    .name("§6Berufe")
+                    .description("§7Öffnet die Auswahl der Berufe")
+                    .asItem()
+                ) {
+                    CustomSound.CLICK.playTo(player)
+                    openGUI(player, GUIView.JOBS)
+                }.setItem(4, 3, ItemBuilder.of(Material.IRON_INGOT)
+                    .name("§6Allgemeiner Ankauf")
+                    .description("§7Öffnet den Ankauf")
+                    .asItem()
+                ){
+                    CustomSound.CLICK.playTo(player)
+                    openGUI(player, GUIView.SELL)
+                }.setItem(4, 4, ItemBuilder.of(Material.GOLD_INGOT)
+                    .name("§6Persönlicher Ankauf")
+                    .description("§7Öffnet einen Ankauf, der je", "§7nach Beruf variiert.")
+                    .asItem()
+                ){
+                    CustomSound.CLICK.playTo(player)
+                    openGUI(player, GUIView.SELL_PERSONAL)
+                }.setItem(4, 6, ItemBuilder.of(Material.CHEST)
+                    .name("§6Tägliche Quests")
+                    .description("§7Öffnet täglich wechselnde Quests.")
+                    .asItem()
+                ){
+                    CustomSound.CLICK.playTo(player)
+                    openGUI(player, GUIView.DAILY)
+                }.setItem(4, 7, ItemBuilder.of(Material.ENDER_CHEST)
+                    .name("§6Wöchentliche Quests")
+                    .description("§7Öffnet wöchentlich wechselnde Quests.")
+                    .asItem()
+                ){
+                    CustomSound.CLICK.playTo(player)
+                    openGUI(player, GUIView.WEEKLY)
+                }.setItem(4, 8, ItemBuilder.of(Material.CHEST_MINECART)
+                    .name("§6Massenquests")
+                    .description("§7Öffnet die verfügbaren Massenquests.")
+                    .asItem()
+                ){
+                    CustomSound.CLICK.playTo(player)
+                    openGUI(player, GUIView.MASS)
+                }
+            }
             GUIView.JOBS -> {
                 var slot = 19
                 for (j: Job in Job.values()) {
