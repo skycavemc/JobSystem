@@ -5,11 +5,14 @@ import de.leonheuer.skycave.jobsystem.model.ColoredStringBuilder
 enum class Message(private val message: String) {
 
     UNKNOWN_COMMAND("&cUnbekannter Befehl. Siehe /job help"),
+    PLAYER_UNKNOWN("&cDer Spieler %player existiert nicht."),
+    NO_USER_PROFILE("&cDer Spieler %player hat kein Nutzerprofil."),
 
     // job admin help
     JOB_ADMIN_HELP_SET_NPC("&e/job setnpc &8» &7Setzt den NPC für das GUI"),
     JOB_ADMIN_HELP_CANCEL("&e/job cancel &8» &7Bricht das Setzen des NPCs ab"),
     JOB_ADMIN_HELP_IMPORT("&e/job import &8» &7Importiert alte Daten"),
+    JOB_ADMIN_HELP_RESETUSER("&e/job resetuser <Spieler> &8» &7Setzt die Nutzerdaten eines Spielers zurück"),
     JOB_ADMIN_HELP_HELP("&e/job help &8» &7Zeigt Hilfe an"),
 
     // job admin commands
@@ -21,6 +24,8 @@ enum class Message(private val message: String) {
     JOB_ADMIN_IMPORT_START("&eBeginne Import..."),
     JOB_ADMIN_IMPORT_FINISHED("&aImport durchgeführt (%time), siehe Konsole für Ergebnisse."),
     JOB_ADMIN_IMPORT_ALREADY("&cDer Import wurde bereits durchgeführt."),
+    JOB_ADMIN_RESETUSER_SYNTAX("&e/job resetuser <Spieler>"),
+    JOB_ADMIN_RESETUSER("&aDas Nutzerprofil von %player wurde zurückgesetzt."),
 
     // npc right click
     JOB_UNSET("&cBitte wähle zuerst einen Job (/job), um Zugriff auf den Ankauf zu bekommen."),
